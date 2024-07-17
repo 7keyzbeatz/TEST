@@ -22,7 +22,6 @@ jobs:
 
       - name: Check URL Availability
         run: |
-          # Example using ProxyCrawl API
           api_key=$PROXYCRAWL_API_KEY
           urls=(
             "https://ertflix.s.llnwi.net/ertlive/ert1/clrdef24613/index.mpd"
@@ -34,6 +33,13 @@ jobs:
           for url in "${urls[@]}"; do
             for country in "${countries[@]}"; do
               response=$(curl -s "https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$url")
+              
+              # Check for errors in response
+              if [[ ! $response =~ "status" ]]; then
+                echo "Error: Response did not contain expected status."
+                exit 1
+              fi
+              
               availability=$(echo "$response" | jq -r '.status')
               
               # Update JSON file with availability status
