@@ -1,3 +1,57 @@
+name: Check Streaming URL Availability
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'  # Run daily at midnight UTC
+  workflow_dispatch:  # Enables manual triggering
+
+jobs:
+  check-availability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check URL Availability
+        run: |
+          api_key=$PROXYCRAWL_API_KEY
+          urls=(
+            "https://ertflix.s.llnwi.net/ertlive/ert1/clrdef24613/index.mpd"
+            "https://streamcdnb4-c98db5952cb54b358365984178fb898a.msvdn.net/live/S86713049/gonOwuUacAxM/playlist.m3u8"
+            # Add more URLs as needed
+          )
+          countries=("US" "UK" "JP" "DE" "FR" "GR" "ES" "IT" "AU")  # List of countries to check
+          
+          for url in "${urls[@]}"; do
+            for country in "${countries[@]}"; do
+              response=$(curl -s "https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$url")
+              availability=$(echo "$response" | jq -r '.status')
+              
+              if [ "$availability" = "success" ]; then
+                echo "URL $url is available in $country"
+              else
+                echo "Error: Failed to fetch availability for $url in $country"
+              fi
+            done
+          done
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "7keyzbeatz@gmail.com"
+          git config --global user.name "7keyzbeatz"
+          git add channels.json
+          git commit -m "Update channel availability"
+          git push
+
+
 name: Update Channel Availability
 
 on:
@@ -23,7 +77,7 @@ jobs:
       - name: Update Availability
         run: |
           api_key=$PROXYCRAWL_API_KEY
-          countries=("US" "UK" "JP" "DE" "FR" "GR" "ES" "IT" "AU")  # List of countries to check
+          countries=("US" "UK" "JP" "DE" "FR")  # List of countries to check
           temp_file=$(mktemp)
 
           # Read and parse channels.json
@@ -35,7 +89,7 @@ jobs:
             for country in "${countries[@]}"; do
               response=$(curl -s "https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$video_url")
               if [[ ! $response =~ "status" ]]; then
-                echo "Error: Failed to fetch availability for $video_url in $country"
+                echo "Error: Failed to fetch availability for $video_url in $country - https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$video_url"
               else
                 availability=$(echo "$response" | jq -r '.status')
                 if [[ $availability == "200" ]]; then
