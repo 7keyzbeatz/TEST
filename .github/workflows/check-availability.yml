@@ -34,9 +34,9 @@ jobs:
             available_countries=()
 
             for country in "${countries[@]}"; do
-              response=$(curl -s "https://api.proxycrawl.com/?token=$PROXYCRAWL_API_KEY&country_code=$country&url=$video_url")
+              response=$(curl -s "https://api.proxycrawl.com/?token=jp70Vjnt8mVVP1Fq-DkXCw&country_code=$country&url=$video_url")
               if [[ ! $response =~ "status" ]]; then
-                echo "Error: Failed to fetch availability for $video_url in $country - https://api.proxycrawl.com/?token=$PROXYCRAWL_API_KEY&country_code=$country&url=$video_url"
+                echo "Error: Failed to fetch availability for $video_url in $country - https://api.proxycrawl.com/?token=jp70Vjnt8mVVP1Fq-DkXCw&country_code=$country&url=$video_url"
               else
                 availability=$(echo "$response" | jq -r '.status')
                 if [[ $availability == "200" ]]; then
