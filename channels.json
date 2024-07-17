@@ -174,9 +174,7 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {
-                "US": true
-            }
+            "availability": {}
         },
         {
             "Title": "Makedonia TV",
@@ -196,9 +194,7 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {
-                "US": true
-            }
+            "availability": {}
         },
         {
             "Title": "STAR",
@@ -241,9 +237,7 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {
-                "US": true
-            }
+            "availability": {}
         },
         {
             "Title": "SKAI",
@@ -347,9 +341,7 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {
-                "US": true
-            }
+            "availability": {}
         }
     ]
 }
