@@ -10,7 +10,7 @@
   "TV": [
     {
       "Title": "ERT1",
-      "Image": "https://i.postimg.cc/C5csx9bG/ert1.png", 
+      "Image": "https://i.postimg.cc/C5csx9bG/ert1.png",
       "Video": "https://ertflix.s.llnwi.net/ertlive/ert1/clrdef24613/index.mpd",
       "VideoOld": "https://ertflix.s.llnwi.net/ertlive/ert1/default/index.mpd",
       "LiveUrl": "https://programmatileorasis.gr/free/18/%CE%95%CE%A1%CE%A41",
@@ -22,10 +22,10 @@
       "StartStringD": ">🔍</span>",
       "EndStringD": "</span>",
       "StartD": 10,
-      "EndD": 0,                                            
-      "DrmSystem": "Widevine",                                 
-      "DrmAPIKey": "https://api.app.ertflix.gr/v1/Player/AcquireContent?platformCodename=www&codename=ept1-live",                                  
-      "LicenseServerKey": "LicenseServerUrl",                      
+      "EndD": 0,
+      "DrmSystem": "Widevine",
+      "DrmAPIKey": "https://api.app.ertflix.gr/v1/Player/AcquireContent?platformCodename=www&codename=ept1-live",
+      "LicenseServerKey": "LicenseServerUrl",
       "DrmChallengeCustomDataKey": "DrmChallengeCustomData",
       "isUnlocked": true,
       "liveContent": true,
@@ -65,10 +65,10 @@
       "StartStringD": ">🔍</span>",
       "EndStringD": "</span>",
       "StartD": 10,
-      "EndD": 0,                               
-      "DrmSystem": "Widevine",                                 
-      "DrmAPIKey": "https://api.app.ertflix.gr/v1/Player/AcquireContent?platformCodename=www&codename=ept3-live-2",                                  
-      "LicenseServerKey": "LicenseServerUrl",                      
+      "EndD": 0,
+      "DrmSystem": "Widevine",
+      "DrmAPIKey": "https://api.app.ertflix.gr/v1/Player/AcquireContent?platformCodename=www&codename=ept3-live-2",
+      "LicenseServerKey": "LicenseServerUrl",
       "DrmChallengeCustomDataKey": "DrmChallengeCustomData",
       "isUnlocked": true,
       "liveContent": true,
@@ -107,7 +107,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": false,
-      "enabledDrm": false    
+      "enabledDrm": false
     },
     {
       "Title": "ERT Kids",
@@ -126,7 +126,7 @@
       "isUnlocked": true,
       "liveContent": false,
       "liveDescription": false,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "MEGA",
@@ -145,7 +145,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "ANT1",
@@ -164,7 +164,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": false,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "Makedonia TV",
@@ -183,7 +183,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "STAR",
@@ -203,7 +203,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "ALPHA",
@@ -222,7 +222,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "SKAI",
@@ -241,7 +241,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "OPEN",
@@ -260,7 +260,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "VOULI",
@@ -279,7 +279,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": true,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "Action24",
@@ -298,7 +298,7 @@
       "isUnlocked": true,
       "liveContent": true,
       "liveDescription": false,
-      "enabledDrm": false     
+      "enabledDrm": false
     },
     {
       "Title": "THESSALIA TV",
