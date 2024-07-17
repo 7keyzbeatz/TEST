@@ -22,7 +22,7 @@ jobs:
 
       - name: Update Availability
         run: |
-          countries=("US" "UK" "JP" "DE")  # List of countries to check
+          countries=("US")  # List of countries to check
           temp_file=$(mktemp)
 
           # Read and parse channels.json, remove double quotes from Video URLs
