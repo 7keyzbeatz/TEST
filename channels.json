@@ -92,7 +92,9 @@
             "liveContent": false,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "ERT NEWS",
@@ -172,7 +174,9 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "Makedonia TV",
@@ -192,7 +196,9 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "STAR",
@@ -213,7 +219,9 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "ALPHA",
@@ -233,7 +241,9 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "SKAI",
@@ -273,7 +283,9 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "VOULI",
@@ -313,7 +325,9 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         },
         {
             "Title": "THESSALIA TV",
@@ -333,7 +347,9 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         }
     ]
 }
