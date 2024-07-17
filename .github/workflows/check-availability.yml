@@ -21,8 +21,6 @@ jobs:
         run: sudo apt-get install jq
 
       - name: Update Availability
-        env:
-          PROXYCRAWL_API_KEY: ${{ secrets.PROXYCRAWL_API_KEY }}  # Accessing the secret
         run: |
           countries=("US" "UK" "JP" "DE")  # List of countries to check
           temp_file=$(mktemp)
