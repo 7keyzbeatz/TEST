@@ -2,7 +2,7 @@ import json
 import requests
 
 # Set your API token here
-PROXYCRAWL_API_KEY = 'jp70Vjnt8mVVP1Fq-DkXCw'
+PROXYCRAWL_API_KEY = '###NOTE###jp70Vjnt8mVVP1Fq-DkXCw###NOTE###'
 countries = ["US"]  # List of countries to check
 
 # Function to check availability of video URL
