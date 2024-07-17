@@ -8,9 +8,25 @@ countries = ["US"]  # List of countries to check
 # Function to check availability of video URL
 def check_availability(video_url):
     try:
-        response = requests.head(video_url)
+        response = requests.head(video_url, allow_redirects=True)
         if response.status_code == 200:
-            return True
+            # Now check if the content is accessible
+            final_url = response.url
+            final_response = requests.get(final_url)
+            if final_response.status_code == 200:
+                return True
+            else:
+                print(f"Error: Final URL {final_url} returned status code {final_response.status_code}")
+                return False
+        elif response.status_code == 302:
+            redirected_url = response.headers.get('Location')
+            if redirected_url:
+                print(f"Video URL redirected to: {redirected_url}")
+                # Now recursively check availability of the redirected URL
+                return check_availability(redirected_url)
+            else:
+                print(f"Error: Video URL {video_url} redirected but no Location header found")
+                return False
         else:
             print(f"Error: Video URL {video_url} returned status code {response.status_code}")
             return False
