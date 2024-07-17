@@ -21,8 +21,9 @@ jobs:
         run: sudo apt-get install jq
 
       - name: Update Availability
+        env:
+          PROXYCRAWL_API_KEY: ${{ secrets.PROXYCRAWL_API_KEY }}  # Accessing the secret
         run: |
-          api_key=$PROXYCRAWL_API_KEY
           countries=("US" "UK" "JP" "DE")  # List of countries to check
           temp_file=$(mktemp)
 
@@ -33,9 +34,9 @@ jobs:
             available_countries=()
 
             for country in "${countries[@]}"; do
-              response=$(curl -s "https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$video_url")
+              response=$(curl -s "https://api.proxycrawl.com/?token=$PROXYCRAWL_API_KEY&country_code=$country&url=$video_url")
               if [[ ! $response =~ "status" ]]; then
-                echo "Error: Failed to fetch availability for $video_url in $country - https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$video_url"
+                echo "Error: Failed to fetch availability for $video_url in $country - https://api.proxycrawl.com/?token=$PROXYCRAWL_API_KEY&country_code=$country&url=$video_url"
               else
                 availability=$(echo "$response" | jq -r '.status')
                 if [[ $availability == "200" ]]; then
