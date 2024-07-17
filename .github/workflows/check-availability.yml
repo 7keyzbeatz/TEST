@@ -25,9 +25,9 @@ jobs:
           countries=("US" "UK" "JP" "DE")  # List of countries to check
           temp_file=$(mktemp)
 
-          # Read and parse channels.json
+          # Read and parse channels.json, remove double quotes from Video URLs
           cp channels.json channels.json.backup  # Backup original file
-          jq '.TV[] | select(.Video != null) | .Video' channels.json | while read -r video_url; do
+          jq '.TV[] | select(.Video != null) | .Video | sub("\""; "")' channels.json | sed 's/"//g' | while read -r video_url; do
             echo "Checking availability for: $video_url"
             available_countries=()
 
