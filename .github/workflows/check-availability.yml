@@ -12,42 +12,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          node-version: '14'
+          python-version: '3.9'
 
-      - name: Install jq (to parse JSON)
-        run: sudo apt-get install jq
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests jq
 
       - name: Update Availability
-        run: |
-          countries=("US")  # List of countries to check
-          temp_file=$(mktemp)
-
-          # Read and parse channels.json, remove double quotes from Video URLs
-          cp channels.json channels.json.backup  # Backup original file
-          jq '.TV[] | select(.Video != null) | .Video | sub("\""; "")' channels.json | sed 's/"//g' | while read -r video_url; do
-            echo "Checking availability for: $video_url"
-            available_countries=()
-
-            for country in "${countries[@]}"; do
-              response=$(curl -s "https://api.proxycrawl.com/?token=jp70Vjnt8mVVP1Fq-DkXCw&country_code=$country&url=$video_url")
-              if [[ ! $response =~ "status" ]]; then
-                echo "Error: Failed to fetch availability for $video_url in $country - https://api.proxycrawl.com/?token=jp70Vjnt8mVVP1Fq-DkXCw&country_code=$country&url=$video_url"
-              else
-                availability=$(echo "$response" | jq -r '.status')
-                if [[ $availability == "200" ]]; then
-                  available_countries+=("$country")
-                fi
-              fi
-            done
-
-            # Update channels.json with availability
-            jq --argjson avc "$(echo ${available_countries[@]} | jq -R 'split("\n")[:-1] | map({(.):true}) | add')" \
-              '.TV |= map(if .Video == $v then .availability = $avc else . end)' --arg v "$video_url" channels.json > "$temp_file" && \
-              mv "$temp_file" channels.json
-          done
+        run: python update_availability.py
 
       - name: Commit and push changes
         run: |
