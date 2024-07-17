@@ -52,8 +52,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.email "your-email@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "7keyzbeatz@gmail.com"
+          git config --global user.name "7keyzbeatz"
           git add channels.json
           git commit -m "Update channel availability"
           git push
