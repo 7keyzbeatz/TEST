@@ -10,12 +10,21 @@ countries = ["US"]  # List of countries to check
 # Function to check availability using ProxyCrawl API
 def check_availability(video_url, country):
     url = f"https://api.proxycrawl.com/?token={PROXYCRAWL_API_KEY}&country_code={country}&url={video_url}"
-    response = requests.get(url)
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors (4xx and 5xx)
         data = response.json()
-        return data.get('status', 500) == 200
-    else:
+        if 'status' in data and data['status'] == 200:
+            return True
+        else:
+            return False
+    except requests.exceptions.RequestException as e:
         print(f"Error: Failed to fetch availability for {video_url} in {country} - {url}")
+        print(f"Exception: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"Error: Failed to decode JSON response for {video_url} in {country}")
+        print(f"Exception: {e}")
         return False
 
 # Read and parse channels.json
