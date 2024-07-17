@@ -341,7 +341,9 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {
+                "US": true
+            }
         }
     ]
 }
