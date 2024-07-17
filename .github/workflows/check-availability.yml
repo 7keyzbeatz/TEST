@@ -1,4 +1,4 @@
-name: Check Streaming URL Availability
+name: Update Channel Availability
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:  # Enables manual triggering
 
 jobs:
-  check-availability:
+  update-availability:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -17,41 +17,43 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install jq (to parse JSON)
+        run: sudo apt-get install jq
 
-      - name: Check URL Availability
+      - name: Update Availability
         run: |
           api_key=$PROXYCRAWL_API_KEY
-          urls=(
-            "https://ertflix.s.llnwi.net/ertlive/ert1/clrdef24613/index.mpd"
-            "https://streamcdnb4-c98db5952cb54b358365984178fb898a.msvdn.net/live/S86713049/gonOwuUacAxM/playlist.m3u8"
-            # Add more URLs as needed
-          )
           countries=("US" "UK" "JP" "DE" "FR" "GR" "ES" "IT" "AU")  # List of countries to check
-          
-          for url in "${urls[@]}"; do
+          temp_file=$(mktemp)
+
+          # Read and parse channels.json
+          cp channels.json channels.json.backup  # Backup original file
+          jq '.TV[] | select(.Video != null) | .Video' channels.json | while read -r video_url; do
+            echo "Checking availability for: $video_url"
+            available_countries=()
+
             for country in "${countries[@]}"; do
-              response=$(curl -s "https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$url")
-              
-              # Check for errors in response
+              response=$(curl -s "https://api.proxycrawl.com/?token=$api_key&country_code=$country&url=$video_url")
               if [[ ! $response =~ "status" ]]; then
-                echo "Error: Response did not contain expected status."
-                exit 1
+                echo "Error: Failed to fetch availability for $video_url in $country"
+              else
+                availability=$(echo "$response" | jq -r '.status')
+                if [[ $availability == "200" ]]; then
+                  available_countries+=("$country")
+                fi
               fi
-              
-              availability=$(echo "$response" | jq -r '.status')
-              
-              # Update JSON file with availability status
-              jq --arg url "$url" --arg country "$country" --arg availability "$availability" \
-                '.[] | select(.url == $url) | .availability[$country] = $availability' channels.json > channels.json.tmp && mv channels.json.tmp channels.json
             done
+
+            # Update channels.json with availability
+            jq --argjson avc "$(echo ${available_countries[@]} | jq -R 'split("\n")[:-1] | map({(.):true}) | add')" \
+              '.TV |= map(if .Video == $v then .availability = $avc else . end)' --arg v "$video_url" channels.json > "$temp_file" && \
+              mv "$temp_file" channels.json
           done
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
-          git config --global user.email "7keyzbeatz@gmail.com"
-          git config --global user.name "7keyzbeatz"
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "Your Name"
           git add channels.json
           git commit -m "Update channel availability"
           git push
