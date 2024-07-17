@@ -1,7 +1,6 @@
 import os
 import requests
-import json
-from jq import jq
+from bs4 import BeautifulSoup
 
 # Set your API token here
 PROXYCRAWL_API_KEY = 'jp70Vjnt8mVVP1Fq-DkXCw'
@@ -9,25 +8,29 @@ countries = ["US"]  # List of countries to check
 
 # Function to check availability using ProxyCrawl API
 def check_availability(video_url, country):
-    url = f"https://api.proxycrawl.com/?token={PROXYCRAWL_API_KEY}&country_code={country}&url={video_url}"
+    url = f"https://api.proxycrawl.com/?token={PROXYCRAWL_API_KEY}&country_code={country}&url={video_url}&format=html"
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for HTTP errors (4xx and 5xx)
-        data = response.json()
-        if 'status' in data and data['status'] == 200:
-            return True
+        
+        # Check if response is HTML content
+        if response.headers.get('Content-Type', '').lower().startswith('text/html'):
+            soup = BeautifulSoup(response.content, 'html.parser')
+            # Example: Check if certain element exists indicating availability
+            if soup.find('div', {'class': 'availability'}):
+                return True
+            else:
+                return False
         else:
+            print(f"Error: Expected HTML content for {video_url} in {country}, got {response.headers.get('Content-Type', '')}")
             return False
+    
     except requests.exceptions.RequestException as e:
         print(f"Error: Failed to fetch availability for {video_url} in {country} - {url}")
         print(f"Exception: {e}")
         return False
-    except json.JSONDecodeError as e:
-        print(f"Error: Failed to decode JSON response for {video_url} in {country}")
-        print(f"Exception: {e}")
-        return False
 
-# Read and parse channels.json
+# Example usage with channels.json
 with open('channels.json', 'r') as f:
     channels = json.load(f)
 
