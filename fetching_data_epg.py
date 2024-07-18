@@ -1,5 +1,5 @@
 import json
-import requests
+import urllib.request
 from datetime import datetime
 
 class GitHubAPI:
@@ -8,21 +8,14 @@ class GitHubAPI:
 
     def get_gist_content(self, gist_id, filename):
         url = f"{self.base_url}/gists/{gist_id}"
-        response = requests.get(url)
-        
-        if response.status_code == 200:
-            gist_data = response.json()
+        with urllib.request.urlopen(url) as response:
+            gist_data = json.loads(response.read())
             if filename in gist_data["files"]:
                 raw_url = gist_data["files"][filename]["raw_url"]
-                response = requests.get(raw_url)
-                if response.status_code == 200:
-                    return response.json()
-                else:
-                    raise Exception(f"Failed to fetch content from Gist file {filename}. Status code: {response.status_code}")
+                with urllib.request.urlopen(raw_url) as response:
+                    return json.loads(response.read())
             else:
                 raise Exception(f"File {filename} not found in Gist.")
-        else:
-            raise Exception(f"Failed to fetch Gist {gist_id}. Status code: {response.status_code}")
 
 def read_basic_version_tv():
     with open("basicVersionTV.json", "r") as f:
@@ -32,38 +25,29 @@ def read_basic_version_tv():
 def fetch_current_time_ms():
     # Using worldtimeapi.org to fetch current time in milliseconds
     try:
-        response = requests.get("https://worldtimeapi.org/api/timezone/Europe/Athens")
-        if response.status_code == 200:
-            current_time = datetime.fromisoformat(response.json()["datetime"].replace("Z", "+00:00")).timestamp() * 1000
+        with urllib.request.urlopen("https://worldtimeapi.org/api/timezone/Europe/Athens") as response:
+            current_time = datetime.fromisoformat(json.loads(response.read())["datetime"].replace("Z", "+00:00")).timestamp() * 1000
             return int(current_time)
-        else:
-            raise Exception(f"Failed to fetch current time. Status code: {response.status_code}")
     except Exception as e:
         raise Exception(f"Failed to fetch current time: {str(e)}")
 
 def main():
     # Initialize GitHub API client
     github_api = GitHubAPI()
-    
+
     try:
         # Read basicVersionTV.json file
-        print("Reading basicVersionTV.json file...")
         basic_version_tv_data = read_basic_version_tv()
-        print(f"basicVersionTV.json data: {basic_version_tv_data}")
-        
+
         # Fetch overview.json content from the specified Gist
         gist_id = "4cd6b3c4ede5f5433b7f4c54a86459e5"
         gist_filename = "overview.json"
-        print(f"Fetching content from Gist: {gist_id}, file: {gist_filename}...")
         gist_content = github_api.get_gist_content(gist_id, gist_filename)
-        print(f"Received gist content: {gist_content}")
-        
+
         # Fetch current time in milliseconds
-        print("Fetching current time in milliseconds...")
         current_time_ms = fetch_current_time_ms()
-        print(f"Current time in milliseconds: {current_time_ms}")
-        
-        # Process each channel found in overview.json
+
+        # Process each channel found in basicVersionTV.json
         for channel_name, channel_items in basic_version_tv_data.items():
             for item in channel_items:
                 # Add or modify keys if they don't exist or are empty
@@ -71,7 +55,7 @@ def main():
                 item.setdefault("d", "")  # Program Description
                 item.setdefault("s", None)  # Start time in milliseconds
                 item.setdefault("e", None)  # End time in milliseconds
-                
+
                 # Check if "SKey" exists and is in gist_content
                 if "SKey" in item and item["SKey"] in gist_content:
                     # Check if the current time falls within the schedule of the channel item
@@ -80,14 +64,14 @@ def main():
                         end_time = schedule.get("e")
                         title = schedule.get("t")
                         description = schedule.get("d")
-                        
+
                         # Check if current_time_ms is between start_time and end_time
                         if start_time is not None and end_time is not None and start_time <= current_time_ms <= end_time:
                             print(f"Channel: {channel_name}")
                             print(f"Playing Now: {title}")
                             print(f"Description: {description}")
                             print(f"Current Time (ms): {current_time_ms}\n")
-    
+
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
