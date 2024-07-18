@@ -46,9 +46,6 @@ def main():
         # Read basicVersionTV.json file
         basic_version_tv_data = read_basic_version_tv()
         
-        # Extract SKey values from basicVersionTV.json
-        skeys = [item["SKey"] for channel in basic_version_tv_data.values() for item in channel]
-        
         # Fetch overview.json content from the specified Gist
         gist_id = "4cd6b3c4ede5f5433b7f4c54a86459e5"
         gist_filename = "overview.json"
@@ -58,20 +55,28 @@ def main():
         current_time_ms = fetch_current_time_ms()
         
         # Process each channel found in overview.json
-        for channel in gist_content:
-            if channel.get("n") in skeys:
-                # Check if the current time falls within the schedule of the channel
-                for schedule in channel.get("s", []):
-                    start_time = schedule["s"]
-                    end_time = schedule["e"]
-                    title = schedule["t"]
-                    description = schedule["d"]
-                    
-                    # Check if current_time_ms is between start_time and end_time
-                    if start_time <= current_time_ms <= end_time:
-                        print(f"Channel: {channel['n']}")
-                        print(f"Playing Now: {title}")
-                        print(f"Description: {description}\n")
+        for channel_name, channel_items in basic_version_tv_data.items():
+            for item in channel_items:
+                # Add or modify keys if they don't exist or are empty
+                item.setdefault("t", "")  # Program Title
+                item.setdefault("d", "")  # Program Description
+                item.setdefault("s", None)  # Start time in milliseconds
+                item.setdefault("e", None)  # End time in milliseconds
+                
+                # Check if "SKey" exists and is in gist_content
+                if "SKey" in item and item["SKey"] in gist_content:
+                    # Check if the current time falls within the schedule of the channel item
+                    for schedule in gist_content[item["SKey"]].get("schedules", []):
+                        start_time = schedule.get("s")
+                        end_time = schedule.get("e")
+                        title = schedule.get("t")
+                        description = schedule.get("d")
+                        
+                        # Check if current_time_ms is between start_time and end_time
+                        if start_time is not None and end_time is not None and start_time <= current_time_ms <= end_time:
+                            print(f"Channel: {channel_name}")
+                            print(f"Playing Now: {title}")
+                            print(f"Description: {description}\n")
     
     except Exception as e:
         print(f"An error occurred: {str(e)}")
