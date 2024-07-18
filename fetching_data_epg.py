@@ -72,27 +72,16 @@ def main():
                 if "SKey" in item and item["SKey"] is not None:
                     print(f"Processing item with SKey: {item['SKey']}")
                     for channel in gist_content:
-                        if channel.get("n") == item["SKey"] and "schedules" in channel:
+                        if channel.get("n") == item["SKey"]:
                             print(f"Found match for SKey: {item['SKey']} in channel: {channel['n']}")
-                            for schedule in channel["schedules"]:
-                                start_time = schedule.get("s")
-                                end_time = schedule.get("e")
-                                title = schedule.get("t")
-                                description = schedule.get("d")
-                                
-                                if start_time is not None and end_time is not None:
-                                    if start_time <= current_time_ms <= end_time:
-                                        item["t"] = title
-                                        item["d"] = description
-                                        item["s"] = start_time
-                                        item["e"] = end_time
-                                        print(f"Updated values for {item['SKey']}:")
-                                        print(f"t: {item['t']}")
-                                        print(f"d: {item['d']}")
-                                        print(f"s: {item['s']}")
-                                        print(f"e: {item['e']}\n")
-                                else:
-                                    print(f"No valid start_time or end_time for SKey: {item['SKey']}")
+                            # Update the item with channel information (assuming n, i, c are relevant)
+                            item["n"] = channel["n"]
+                            item["i"] = channel["i"]
+                            item["c"] = channel["c"]
+                            print(f"Updated values for {item['SKey']}:")
+                            print(f"n: {item['n']}")
+                            print(f"i: {item['i']}")
+                            print(f"c: {item['c']}\n")
                         else:
                             print(f"No match found for SKey: {item['SKey']}")
 
