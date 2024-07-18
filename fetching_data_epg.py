@@ -66,14 +66,29 @@ def main():
         print(f"Current time in milliseconds: {current_time_ms}")
         
         # Process each channel found in overview.json
-        for channel_name, channel_items in basic_version_tv_data.items():
-            for item in channel_items:
-                if "SKey" in item and item["SKey"] in gist_content:
-                    # Example: Update 't', 'd', 's', 'e' based on fetched data
-                    item["t"] = "New Title"
-                    item["d"] = "New Description"
-                    item["s"] = current_time_ms
-                    item["e"] = current_time_ms + 3600000  # Example: End time 1 hour later
+        for channel in gist_content:
+            if "schedules" in channel:
+                for schedule in channel["schedules"]:
+                    start_time = schedule.get("s")
+                    end_time = schedule.get("e")
+                    title = schedule.get("t")
+                    description = schedule.get("d")
+                    
+                    if start_time is not None and end_time is not None:
+                        if start_time <= current_time_ms <= end_time:
+                            # Find matching item in basicVersionTV.json and update values
+                            for channel_name, channel_items in basic_version_tv_data.items():
+                                for item in channel_items:
+                                    if "SKey" in item and item["SKey"] == channel["n"]:
+                                        item["t"] = title
+                                        item["d"] = description
+                                        item["s"] = start_time
+                                        item["e"] = end_time
+                                        print(f"Updated values for {item['SKey']}:")
+                                        print(f"t: {item['t']}")
+                                        print(f"d: {item['d']}")
+                                        print(f"s: {item['s']}")
+                                        print(f"e: {item['e']}\n")
         
         # Update basicVersionTV.json with modified data
         update_basic_version_tv(basic_version_tv_data)
