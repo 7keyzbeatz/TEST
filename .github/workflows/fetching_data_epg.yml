@@ -3,6 +3,7 @@ name: Fetch TV Data
 on:
   schedule:
     - cron: '*/15 * * * *'  # Runs every 15 minutes
+  workflow_dispatch:  # Enables manual triggering
 
 jobs:
   fetch_data:
