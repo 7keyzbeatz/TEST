@@ -1,34 +1,33 @@
-name: Fetch TV Data
+name: Update TV Data
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'  # Runs every 15 minutes
-  workflow_dispatch:  # Enables manual triggering
+  push:
+    branches:
+      - main
 
 jobs:
-  fetch_data:
-    name: Fetch and Update TV Data
-    runs-on: ubuntu-latest  # Use the latest Ubuntu environment
-
+  update_tv_data:
+    runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2  # Checks out the repository so your workflow can access it
-
-      - name: Set up Python
-        uses: actions/setup-python@v2  # Sets up Python environment
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests  # Install the requests library
-
-      - name: Run script to fetch TV data
-        run: python fetching_data_epg.py  # Replace with actual script name and path
-
-      - name: Commit and push updated data (if applicable)
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add .
-          git commit -m "Update TV data"
-          git push
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12.4'
+    
+    - name: Run script
+      run: python fetching_data_epg.py
+      
+    - name: Configure Git
+      run: |
+        git config --global user.email "medialtdcontact@gmail.com"
+        git config --global user.name "med1altd"
+      
+    - name: Commit and push changes
+      run: |
+        git add .
+        git commit -m "Update TV data"
+        git push
