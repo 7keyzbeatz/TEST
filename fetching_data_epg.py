@@ -47,15 +47,21 @@ def main():
     
     try:
         # Read basicVersionTV.json file
+        print("Reading basicVersionTV.json file...")
         basic_version_tv_data = read_basic_version_tv()
+        print(f"basicVersionTV.json data: {basic_version_tv_data}")
         
         # Fetch overview.json content from the specified Gist
         gist_id = "4cd6b3c4ede5f5433b7f4c54a86459e5"
         gist_filename = "overview.json"
+        print(f"Fetching content from Gist: {gist_id}, file: {gist_filename}...")
         gist_content = github_api.get_gist_content(gist_id, gist_filename)
+        print(f"Received gist content: {gist_content}")
         
         # Fetch current time in milliseconds
+        print("Fetching current time in milliseconds...")
         current_time_ms = fetch_current_time_ms()
+        print(f"Current time in milliseconds: {current_time_ms}")
         
         # Process each channel found in overview.json
         for channel_name, channel_items in basic_version_tv_data.items():
