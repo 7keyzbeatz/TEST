@@ -8,24 +8,27 @@ on:
 jobs:
   update_tv_data:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.12.4'
-    
+
+    - name: Install requests library
+      run: pip install requests
+
     - name: Run script
       run: python fetching_data_epg.py
-      
+
     - name: Configure Git
       run: |
         git config --global user.email "medialtdcontact@gmail.com"
         git config --global user.name "med1altd"
-      
+
     - name: Commit and push changes
       run: |
         git add .
