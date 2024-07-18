@@ -65,21 +65,20 @@ def main():
         current_time_ms = fetch_current_time_ms()
         print(f"Current time in milliseconds: {current_time_ms}")
         
-        # Process each channel found in overview.json
-        for channel in gist_content:
-            if "schedules" in channel:
-                for schedule in channel["schedules"]:
-                    start_time = schedule.get("s")
-                    end_time = schedule.get("e")
-                    title = schedule.get("t")
-                    description = schedule.get("d")
-                    
-                    if start_time is not None and end_time is not None:
-                        if start_time <= current_time_ms <= end_time:
-                            # Find matching item in basicVersionTV.json and update values
-                            for channel_name, channel_items in basic_version_tv_data.items():
-                                for item in channel_items:
-                                    if "SKey" in item and item["SKey"] == channel["n"]:
+        # Update basicVersionTV.json with fetched program information
+        for channel_name, channel_items in basic_version_tv_data.items():
+            for item in channel_items:
+                if "SKey" in item:
+                    for channel in gist_content:
+                        if channel.get("n") == item["SKey"] and "schedules" in channel:
+                            for schedule in channel["schedules"]:
+                                start_time = schedule.get("s")
+                                end_time = schedule.get("e")
+                                title = schedule.get("t")
+                                description = schedule.get("d")
+                                
+                                if start_time is not None and end_time is not None:
+                                    if start_time <= current_time_ms <= end_time:
                                         item["t"] = title
                                         item["d"] = description
                                         item["s"] = start_time
@@ -90,7 +89,7 @@ def main():
                                         print(f"s: {item['s']}")
                                         print(f"e: {item['e']}\n")
         
-        # Update basicVersionTV.json with modified data
+        # Write updated basicVersionTV.json back to file
         update_basic_version_tv(basic_version_tv_data)
         print("basicVersionTV.json updated successfully.")
         
