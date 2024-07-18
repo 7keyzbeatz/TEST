@@ -1,5 +1,5 @@
 import json
-import urllib.request
+import requests
 from datetime import datetime
 
 class GitHubAPI:
@@ -8,14 +8,21 @@ class GitHubAPI:
 
     def get_gist_content(self, gist_id, filename):
         url = f"{self.base_url}/gists/{gist_id}"
-        with urllib.request.urlopen(url) as response:
-            gist_data = json.loads(response.read())
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            gist_data = response.json()
             if filename in gist_data["files"]:
                 raw_url = gist_data["files"][filename]["raw_url"]
-                with urllib.request.urlopen(raw_url) as response:
-                    return json.loads(response.read())
+                response = requests.get(raw_url)
+                if response.status_code == 200:
+                    return response.json()
+                else:
+                    raise Exception(f"Failed to fetch content from Gist file {filename}. Status code: {response.status_code}")
             else:
                 raise Exception(f"File {filename} not found in Gist.")
+        else:
+            raise Exception(f"Failed to fetch Gist {gist_id}. Status code: {response.status_code}")
 
 def read_basic_version_tv():
     with open("basicVersionTV.json", "r") as f:
@@ -23,55 +30,55 @@ def read_basic_version_tv():
     return data
 
 def fetch_current_time_ms():
-    # Using worldtimeapi.org to fetch current time in milliseconds
     try:
-        with urllib.request.urlopen("https://worldtimeapi.org/api/timezone/Europe/Athens") as response:
-            current_time = datetime.fromisoformat(json.loads(response.read())["datetime"].replace("Z", "+00:00")).timestamp() * 1000
+        response = requests.get("https://worldtimeapi.org/api/timezone/Europe/Athens")
+        if response.status_code == 200:
+            current_time = datetime.fromisoformat(response.json()["datetime"].replace("Z", "+00:00")).timestamp() * 1000
             return int(current_time)
+        else:
+            raise Exception(f"Failed to fetch current time. Status code: {response.status_code}")
     except Exception as e:
         raise Exception(f"Failed to fetch current time: {str(e)}")
 
-def main():
-    # Initialize GitHub API client
-    github_api = GitHubAPI()
+def update_basic_version_tv(data):
+    with open("basicVersionTV.json", "w") as f:
+        json.dump(data, f, indent=4)
 
+def main():
+    github_api = GitHubAPI()
+    
     try:
         # Read basicVersionTV.json file
+        print("Reading basicVersionTV.json file...")
         basic_version_tv_data = read_basic_version_tv()
-
+        print(f"basicVersionTV.json data: {basic_version_tv_data}")
+        
         # Fetch overview.json content from the specified Gist
         gist_id = "4cd6b3c4ede5f5433b7f4c54a86459e5"
         gist_filename = "overview.json"
+        print(f"Fetching content from Gist: {gist_id}, file: {gist_filename}...")
         gist_content = github_api.get_gist_content(gist_id, gist_filename)
-
+        print(f"Received gist content: {gist_content}")
+        
         # Fetch current time in milliseconds
+        print("Fetching current time in milliseconds...")
         current_time_ms = fetch_current_time_ms()
-
-        # Process each channel found in basicVersionTV.json
+        print(f"Current time in milliseconds: {current_time_ms}")
+        
+        # Process each channel found in overview.json
         for channel_name, channel_items in basic_version_tv_data.items():
             for item in channel_items:
-                # Add or modify keys if they don't exist or are empty
-                item.setdefault("t", "")  # Program Title
-                item.setdefault("d", "")  # Program Description
-                item.setdefault("s", None)  # Start time in milliseconds
-                item.setdefault("e", None)  # End time in milliseconds
-
-                # Check if "SKey" exists and is in gist_content
                 if "SKey" in item and item["SKey"] in gist_content:
-                    # Check if the current time falls within the schedule of the channel item
-                    for schedule in gist_content[item["SKey"]].get("schedules", []):
-                        start_time = schedule.get("s")
-                        end_time = schedule.get("e")
-                        title = schedule.get("t")
-                        description = schedule.get("d")
-
-                        # Check if current_time_ms is between start_time and end_time
-                        if start_time is not None and end_time is not None and start_time <= current_time_ms <= end_time:
-                            print(f"Channel: {channel_name}")
-                            print(f"Playing Now: {title}")
-                            print(f"Description: {description}")
-                            print(f"Current Time (ms): {current_time_ms}\n")
-
+                    # Example: Update 't', 'd', 's', 'e' based on fetched data
+                    item["t"] = "New Title"
+                    item["d"] = "New Description"
+                    item["s"] = current_time_ms
+                    item["e"] = current_time_ms + 3600000  # Example: End time 1 hour later
+        
+        # Update basicVersionTV.json with modified data
+        update_basic_version_tv(basic_version_tv_data)
+        print("basicVersionTV.json updated successfully.")
+        
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
