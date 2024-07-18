@@ -31,7 +31,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "ERT 1",
+            "i": 18,
+            "c": 1
         },
         {
             "Title": "ERT2",
@@ -51,7 +54,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "ERT 2",
+            "i": 87,
+            "c": 1
         },
         {
             "Title": "ERT3",
@@ -76,7 +82,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "ERT 3",
+            "i": 6,
+            "c": 1
         },
         {
             "Title": "ERT WORLD",
@@ -114,7 +123,10 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "ERT News",
+            "i": 129,
+            "c": 1
         },
         {
             "Title": "ERT Kids",
@@ -154,7 +166,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "Mega",
+            "i": 1,
+            "c": 1
         },
         {
             "Title": "ANT1",
@@ -174,7 +189,10 @@
             "liveContent": true,
             "liveDescription": false,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "Ant1",
+            "i": 2,
+            "c": 1
         },
         {
             "Title": "Makedonia TV",
@@ -194,7 +212,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "Makedonia TV",
+            "i": 17,
+            "c": 1
         },
         {
             "Title": "STAR",
@@ -217,7 +238,10 @@
             "enabledDrm": false,
             "availability": {
                 "US": true
-            }
+            },
+            "n": "Star",
+            "i": 3,
+            "c": 1
         },
         {
             "Title": "ALPHA",
@@ -237,7 +261,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "Alpha",
+            "i": 5,
+            "c": 1
         },
         {
             "Title": "SKAI",
@@ -257,7 +284,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "Skai",
+            "i": 7,
+            "c": 1
         },
         {
             "Title": "OPEN",
@@ -279,7 +309,10 @@
             "enabledDrm": false,
             "availability": {
                 "US": true
-            }
+            },
+            "n": "Open Beyond",
+            "i": 99,
+            "c": 1
         },
         {
             "Title": "VOULI",
@@ -299,7 +332,10 @@
             "liveContent": true,
             "liveDescription": true,
             "enabledDrm": false,
-            "availability": {}
+            "availability": {},
+            "n": "Vouli",
+            "i": 80,
+            "c": 1
         },
         {
             "Title": "Action24",
@@ -321,7 +357,10 @@
             "enabledDrm": false,
             "availability": {
                 "US": true
-            }
+            },
+            "n": "Action 24",
+            "i": 546,
+            "c": 2
         },
         {
             "Title": "THESSALIA TV",
@@ -343,7 +382,10 @@
             "enabledDrm": false,
             "availability": {
                 "US": true
-            }
+            },
+            "n": "Thessalia TV",
+            "i": 540,
+            "c": 2
         }
     ]
 }
