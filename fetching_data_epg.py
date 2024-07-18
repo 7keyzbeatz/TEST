@@ -1,5 +1,6 @@
 import json
 import requests
+from datetime import datetime
 
 class GitHubAPI:
     def __init__(self):
@@ -29,11 +30,11 @@ def read_basic_version_tv():
     return data
 
 def fetch_current_time_ms():
-    # Fetch current time in milliseconds from World Time API
+    # Using worldtimeapi.org to fetch current time in milliseconds
     try:
         response = requests.get("https://worldtimeapi.org/api/timezone/Europe/Athens")
         if response.status_code == 200:
-            current_time = response.json()["unixtime"] * 1000  # Convert seconds to milliseconds
+            current_time = datetime.fromisoformat(response.json()["datetime"].replace("Z", "+00:00")).timestamp() * 1000
             return int(current_time)
         else:
             raise Exception(f"Failed to fetch current time. Status code: {response.status_code}")
@@ -78,7 +79,8 @@ def main():
                         if start_time is not None and end_time is not None and start_time <= current_time_ms <= end_time:
                             print(f"Channel: {channel_name}")
                             print(f"Playing Now: {title}")
-                            print(f"Description: {description}\n")
+                            print(f"Description: {description}")
+                            print(f"Current Time (ms): {current_time_ms}\n")
     
     except Exception as e:
         print(f"An error occurred: {str(e)}")
