@@ -68,7 +68,7 @@ def main():
         # Update basicVersionTV.json with fetched program information
         for channel_name, channel_items in basic_version_tv_data.items():
             for item in channel_items:
-                if "SKey" in item:
+                if "SKey" in item and item["SKey"] is not None:
                     for channel in gist_content:
                         if channel.get("n") == item["SKey"] and "schedules" in channel:
                             for schedule in channel["schedules"]:
