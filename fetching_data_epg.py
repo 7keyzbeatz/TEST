@@ -1,6 +1,5 @@
 import json
 import requests
-from datetime import datetime
 
 class GitHubAPI:
     def __init__(self):
@@ -30,13 +29,16 @@ def read_basic_version_tv():
     return data
 
 def fetch_current_time_ms():
-    # Using an example API to fetch current time in milliseconds
-    response = requests.get("http://worldclockapi.com/api/json/utc/now")
-    if response.status_code == 200:
-        current_time = response.json()["currentFileTime"]
-        return int(current_time)
-    else:
-        raise Exception(f"Failed to fetch current time. Status code: {response.status_code}")
+    # Fetch current time in milliseconds from World Time API
+    try:
+        response = requests.get("https://worldtimeapi.org/api/timezone/Europe/Athens")
+        if response.status_code == 200:
+            current_time = response.json()["unixtime"] * 1000  # Convert seconds to milliseconds
+            return int(current_time)
+        else:
+            raise Exception(f"Failed to fetch current time. Status code: {response.status_code}")
+    except Exception as e:
+        raise Exception(f"Failed to fetch current time: {str(e)}")
 
 def main():
     # Initialize GitHub API client
