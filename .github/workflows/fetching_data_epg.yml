@@ -1,8 +1,7 @@
 name: Update TV Data
 
 on:
-  schedule:
-    - cron: '0,15,30,45 * * * *'  # Runs at :00, :15, :30, :45 every hour
+  workflow_dispatch:  # Enables manual triggering
 
 jobs:
   update_tv_data:
