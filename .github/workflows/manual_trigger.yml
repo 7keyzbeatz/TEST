@@ -24,6 +24,10 @@ jobs:
         run: |
           echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" > service_account.json
 
+      - name: Debug JSON Content
+        run: |
+          cat service_account.json
+
       - name: Run AdMob script
         run: |
           python admob_example.py service_account.json
