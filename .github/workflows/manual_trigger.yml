@@ -21,14 +21,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install google-api-python-client google-auth
+          pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
 
-      - name: Save service account key
+      - name: Set up environment variables
         run: |
-          echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}" > service_account.json
+          echo "ACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }}" >> $GITHUB_ENV
 
       - name: Run Python script
         run: |
           python admob_example.py
         env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
