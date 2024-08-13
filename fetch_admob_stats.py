@@ -39,7 +39,7 @@ def get_access_token():
 def fetch_admob_stats(access_token):
     """Fetch AdMob statistics using the access token."""
     # Example endpoint to get AdMob account details, adjust as needed
-    url = f"{ADMOB_API_URL}/YOUR_ACCOUNT_ID/stats"  # Replace with your AdMob account ID and appropriate endpoint
+    url = f"{ADMOB_API_URL}/1669215305824306/stats"  # Replace with your AdMob account ID and appropriate endpoint
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Accept': 'application/json'
