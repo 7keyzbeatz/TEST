@@ -24,5 +24,5 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY }}
         run: |
-          # Execute the Python script with the secret passed as an environment variable
+          # Pass the service account JSON directly to the script
           python admob_example.py "${{ secrets.SERVICE_ACCOUNT_KEY }}"
