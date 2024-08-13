@@ -29,7 +29,7 @@ def main():
         service = build('admob', 'v1', credentials=credentials)
         
         # Example API call - replace with actual call as needed
-        account_id = 'pub-1669215305824306'  # Replace with your AdMob account ID
+        account_id = '1669215305824306'  # Replace with your AdMob account ID
         response = service.accounts().list().execute()
         
         # Print response or process it as needed
