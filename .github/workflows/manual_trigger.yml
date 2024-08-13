@@ -1,15 +1,25 @@
-name: Run AdMob Example
+name: Fetch AdMob Stats
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      client_id:
+        description: 'OAuth 2.0 Client ID'
+        required: true
+        type: string
+      client_secret:
+        description: 'OAuth 2.0 Client Secret'
+        required: true
+        type: string
+      authorization_code:
+        description: 'OAuth 2.0 Authorization Code'
+        required: true
+        type: string
 
 jobs:
-  run-python-script:
+  fetch-stats:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,14 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+          pip install requests
 
-      - name: Set up environment variables
-        run: |
-          echo "ACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }}" >> $GITHUB_ENV
-
-      - name: Run Python script
-        run: |
-          python admob_example.py
+      - name: Run script to fetch AdMob stats
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          CLIENT_ID: ${{ github.event.inputs.client_id }}
+          CLIENT_SECRET: ${{ github.event.inputs.client_secret }}
+          AUTHORIZATION_CODE: ${{ github.event.inputs.authorization_code }}
+        run: |
+          python fetch_admob_stats.py
