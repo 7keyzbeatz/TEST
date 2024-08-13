@@ -21,8 +21,7 @@ jobs:
           pip install google-api-python-client google-auth
 
       - name: Run AdMob script
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY }}
         run: |
-          # Pass the service account JSON directly to the script
-          python admob_example.py "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+          # Use 'echo' to avoid secrets being directly exposed in the script
+          echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" > service_account.json
+          python admob_example.py service_account.json
