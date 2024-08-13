@@ -5,7 +5,7 @@ import requests
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 AUTHORIZATION_CODE = os.getenv('AUTHORIZATION_CODE')
-REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
+REDIRECT_URI = 'https://movieflixgrapp.vercel.app'
 TOKEN_URI = 'https://oauth2.googleapis.com/token'
 ADMOB_API_URL = 'https://admob.googleapis.com/v1/accounts'  # Adjust endpoint as needed for fetching stats
 
