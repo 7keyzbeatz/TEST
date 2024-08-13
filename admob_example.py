@@ -1,6 +1,7 @@
 import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 def main():
     # Replace this JSON data with your actual service account JSON
@@ -18,24 +19,24 @@ def main():
         "universe_domain": "googleapis.com"
     }
     
-    # Convert the JSON data to a file-like object
-    service_account_info = json.dumps(service_account_json)
-    
     # Load credentials from JSON data
     credentials = service_account.Credentials.from_service_account_info(
-        json.loads(service_account_info)
+        service_account_json
     )
     
     # Build the AdMob API service
-    service = build('admob', 'v1', credentials=credentials)
+    try:
+        service = build('admob', 'v1', credentials=credentials)
+        
+        # Example API call - replace with actual call as needed
+        account_id = 'pub-1669215305824306'  # Replace with your AdMob account ID
+        response = service.accounts().list().execute()
+        
+        # Print response or process it as needed
+        print(response)
     
-    # Example API call - replace with actual call as needed
-    # Replace <YOUR_ACCOUNT_ID> with the actual account ID
-    account_id = 'pub-1669215305824306'
-    response = service.accounts().list().execute()
-    
-    # Print response or process it as needed
-    print(response)
+    except HttpError as error:
+        print(f'An error occurred: {error}')
 
 if __name__ == '__main__':
     main()
