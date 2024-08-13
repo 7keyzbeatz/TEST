@@ -1,7 +1,7 @@
 name: Run AdMob Script Manually
 
 on:
-  workflow_dispatch:  # This allows you to manually trigger the workflow from GitHub
+  workflow_dispatch:  # Allows manual triggering from GitHub
 
 jobs:
   run-script:
@@ -24,7 +24,5 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_KEY }}
         run: |
-          # Save the service account key to a file
-          echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" > service_account_key.json
-          # Execute the Python script
-          python admob_example.py
+          # Execute the Python script with the secret passed as an environment variable
+          python admob_example.py "${{ secrets.SERVICE_ACCOUNT_KEY }}"
