@@ -24,22 +24,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install beautifulsoup4 requests
 
-    - name: Scrape Movie Data
+    - name: Run Scrape Script
       run: |
         python scripts/grab_gamatotv_movies.py
 
-    - name: Upload results
-      if: always()  # Ensure this step runs even if previous steps fail
-      uses: actions/upload-artifact@v3
-      with:
-        name: movie-data
-        path: movies.json
-
-    - name: Verify Results
+    - name: Verify JSON File
       run: |
         if [ -f movies.json ]; then
-          echo "movies.json found and uploaded."
+          echo "movies.json found."
         else
           echo "movies.json not found!"
           exit 1
         fi
+
+    - name: Upload results
+      uses: actions/upload-artifact@v3
+      with:
+        name: movie-data
+        path: movies.json
