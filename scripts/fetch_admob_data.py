@@ -29,14 +29,25 @@ def get_access_token():
 def generate_network_report(access_token):
     api_url = f'https://admob.googleapis.com/v1/accounts/{PUBLISHER_ID}/networkReport:generate'
     
-    # Define the request body based on actual API documentation
+    # Adjust the request body based on the correct format
     request_body = {
-        "dateRange": {
-            "startDate": {"year": 2024, "month": 1, "day": 1},
-            "endDate": {"year": 2024, "month": 1, "day": 31}
-        },
-        "dimensions": ["DATE", "AD_UNIT_ID"],
-        "metrics": ["ESTIMATED_EARNINGS", "IMPRESSIONS"]
+        "reportSpec": {
+            "dateRange": {
+                "startDate": {
+                    "year": 2024,
+                    "month": 1,
+                    "day": 1
+                },
+                "endDate": {
+                    "year": 2024,
+                    "month": 8,
+                    "day": 14
+                }
+            },
+            "dimensions": ["DATE"],
+            "metrics": ["MATCH_RATE"],
+            "timeZone": []  # Note: Adjust based on whether you need a specific time zone or not
+        }
     }
     
     headers = {
