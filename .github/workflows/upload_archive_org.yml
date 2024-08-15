@@ -22,4 +22,4 @@ jobs:
       env:
         ARCHIVE_ORG_ACCESS_TOKEN: ${{ secrets.ARCHIVE_ORG_ACCESS_TOKEN }}
       run: |
-        ia upload "your-archive-item-name" video.mp4 --metadata="title=Your Video Title" --metadata="description=Your Video Description"
+        ia upload "your-archive-item-name" video.mp4 --metadata="title:Your Video Title" --metadata="description:Your Video Description"
