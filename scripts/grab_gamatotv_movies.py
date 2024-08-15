@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import os
 
 # Base URL to scrape
-base_url = 'https://gamatotv.info/el/tainies/'
+base_url = 'https://gamatotv.info/el/comedy/'
 
 # TMDB API key and base URL
 tmdb_api_key = '753fba9d8bfbd1068ebd0b4437209a8a'
@@ -35,8 +36,15 @@ def search_tmdb(title, year, post_id):
         }
     return None
 
+# Function to save data to a JSON file
+def save_to_file(batch_json, batch_index):
+    file_name = f'movies_batch_{batch_index}.json'
+    with open(file_name, 'w', encoding='utf-8') as file:
+        file.write(batch_json)
+    print(f'Saved batch {batch_index} to {file_name}')
+
 # Loop through the first 10 pages
-for page in range(400, 523):
+for page in range(1, 111):
     # Construct the URL for each page
     url = f'{base_url}page/{page}/' if page > 1 else base_url
     
@@ -74,14 +82,16 @@ for page in range(400, 523):
             if tmdb_data:
                 movies.append(tmdb_data)
 
-# Print movies in batches of 50
+# Print movies in batches of 50 and save each batch to a file
 batch_size = 50
 for i in range(0, len(movies), batch_size):
     batch = movies[i:i + batch_size]
-    batch_index = i + 1  # Starting index for this batch
+    batch_index = i // batch_size + 1  # Calculate batch index (1-based)
     batch_json = json.dumps({"Movies": batch}, indent=4, ensure_ascii=False)
     
     # Print the batch JSON
-    print(f"Batch {batch_index} - {batch_index + len(batch) - 1}:")
+    print(f"Batch {batch_index} - {batch_index * batch_size}:")
     print(batch_json)
-    # No user input prompt; the script will simply print each batch
+    
+    # Save the batch JSON to a file
+    save_to_file(batch_json, batch_index)
