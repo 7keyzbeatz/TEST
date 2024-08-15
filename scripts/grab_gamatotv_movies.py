@@ -13,7 +13,7 @@ tmdb_base_url = 'https://api.themoviedb.org/3/search/movie'
 movies = []
 
 # Function to search TMDB for a movie and return the first result
-def search_tmdb(title, year):
+def search_tmdb(title, year, post_id):
     params = {
         'query': title,
         'api_key': tmdb_api_key,
@@ -27,15 +27,15 @@ def search_tmdb(title, year):
         result = data['results'][0]
         return {
             'TMDB_ID': result['id'],
-            'Title': result['original_title'],
+            'Title': result['title'],  # Use title
             'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
-            'Video': result['id'],
+            'Video': post_id,  # Set Video as post ID
             'isUnlocked': True
         }
     return None
 
-# Loop through pages 1 to 50
-for page in range(1, 51):
+# Loop through the first 10 pages
+for page in range(1, 11):
     # Construct the URL for each page
     url = f'{base_url}page/{page}/' if page > 1 else base_url
     
@@ -69,15 +69,19 @@ for page in range(1, 51):
             title = full_title.split('(')[0].strip()  # Removes year from title
             
             # Search TMDB for the movie
-            tmdb_data = search_tmdb(title, year)
+            tmdb_data = search_tmdb(title, year, post_id)
             if tmdb_data:
                 tmdb_data['Fetch'] = 'GamatoTV'
-                tmdb_data['Video'] = post_id  # Use post ID for Video
                 movies.append(tmdb_data)
 
-# Print movies in batches of 50
+# Print movies in batches of 50 with indexing
 batch_size = 50
 for i in range(0, len(movies), batch_size):
     batch = movies[i:i + batch_size]
-    print(json.dumps({"Movies": batch}, indent=4, ensure_ascii=False))
+    batch_index = i + 1  # Starting index for this batch
+    batch_json = json.dumps({"Movies": batch}, indent=4, ensure_ascii=False)
+    
+    # Print the batch JSON
+    print(f"Batch {batch_index} - {batch_index + len(batch) - 1}:")
+    print(batch_json)
     input("Press Enter to continue to the next batch...")
