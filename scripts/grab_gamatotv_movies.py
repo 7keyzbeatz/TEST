@@ -51,7 +51,7 @@ def save_to_file(movies):
 
 # Main scraping loop
 try:
-    for page in range(1, 2):
+    for page in range(1, 111):
         url = f'{base_url}page/{page}/' if page > 1 else base_url
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
