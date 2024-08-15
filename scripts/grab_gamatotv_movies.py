@@ -2,9 +2,19 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
+import argparse
+
+# Function to parse command-line arguments
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Scrape movie data from GamatoTV.')
+    parser.add_argument('--base_url', required=True, help='Base URL for scraping')
+    parser.add_argument('--start_page', type=int, required=True, help='Start page number')
+    parser.add_argument('--end_page', type=int, required=True, help='End page number')
+    return parser.parse_args()
 
 # Base URL to scrape
-base_url = 'https://gamatotv.info/el/comedy/'
+def get_base_url(base_url, page):
+    return f'{base_url}page/{page}/' if page > 1 else base_url
 
 # TMDB API key and base URL
 tmdb_api_key = '753fba9d8bfbd1068ebd0b4437209a8a'
@@ -50,7 +60,7 @@ def fetch_html(url):
 # Function to grab player URL
 def grab_player_url(input_html):
     if input_html:
-        url_pattern = r"http://gmtcloud\.best/\S*"
+        url_pattern = r"http://gmtcloud\.best/\S+"
         match = re.search(url_pattern, input_html)
         if match:
             return match.group().split('"')[0]
@@ -91,40 +101,49 @@ def save_to_file(movies):
         print(f"Error saving movies to file: {e}")
 
 # Main scraping loop
-try:
-    for page in range(1, 11):
-        url = f'{base_url}page/{page}/' if page > 1 else base_url
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        content_div = soup.find('div', id='content')
-        if not content_div:
-            print(f"'<div id=\"content\">' not found in the HTML content for page {page}")
-            continue
-        posts = content_div.find_all('div', id=lambda x: x and x.startswith('post-'))
-        if not posts:
-            print(f"No posts found on page {page}")
-            continue
-        for post in posts:
-            post_id = post.get('id').replace('post-', '')
-            title_tag = post.find('h1', class_='post-title')
-            if title_tag:
-                full_title = title_tag.get_text(strip=True)
-                year = full_title.split('(')[-1].replace(')', '')
-                title = full_title.split('(')[0].strip()
-                print(f"Processing movie: {title} ({year}) with post ID: {post_id}")
-                direct_url = grab_streaming_url(post_id)
-                if direct_url:
-                    print(f"Valid MP4 URL found: {direct_url}")
-                    tmdb_data = search_tmdb(title, year, post_id)
-                    if tmdb_data:
-                        tmdb_data['Video'] = direct_url
-                        movies.append(tmdb_data)
-                else:
-                    print(f"No valid MP4 URL found for post ID: {post_id}")
-    if movies:
-        save_to_file(movies)
-    else:
-        print("No movies were found or saved.")
+def main():
+    args = parse_arguments()
+    base_url = args.base_url
+    start_page = args.start_page
+    end_page = args.end_page
 
-except Exception as e:
-    print(f"An error occurred: {e}")
+    try:
+        for page in range(start_page, end_page + 1):
+            url = get_base_url(base_url, page)
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            content_div = soup.find('div', id='content')
+            if not content_div:
+                print(f"'<div id=\"content\">' not found in the HTML content for page {page}")
+                continue
+            posts = content_div.find_all('div', id=lambda x: x and x.startswith('post-'))
+            if not posts:
+                print(f"No posts found on page {page}")
+                continue
+            for post in posts:
+                post_id = post.get('id').replace('post-', '')
+                title_tag = post.find('h1', class_='post-title')
+                if title_tag:
+                    full_title = title_tag.get_text(strip=True)
+                    year = full_title.split('(')[-1].replace(')', '')
+                    title = full_title.split('(')[0].strip()
+                    print(f"Processing movie: {title} ({year}) with post ID: {post_id}")
+                    direct_url = grab_streaming_url(post_id)
+                    if direct_url:
+                        print(f"Valid MP4 URL found: {direct_url}")
+                        tmdb_data = search_tmdb(title, year, post_id)
+                        if tmdb_data:
+                            tmdb_data['Video'] = direct_url
+                            movies.append(tmdb_data)
+                    else:
+                        print(f"No valid MP4 URL found for post ID: {post_id}")
+        if movies:
+            save_to_file(movies)
+        else:
+            print("No movies were found or saved.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
