@@ -24,11 +24,12 @@ tmdb_base_url = 'https://api.themoviedb.org/3/search/movie'
 movies = []
 
 # Function to search TMDB for a movie and return the first result
-def search_tmdb(title, year, post_id):
+def search_tmdb(title, year, post_id, direct_url):
     params = {
         'query': title,
         'api_key': tmdb_api_key,
-        'year': year
+        'year': year,
+        'direct_url': direct_url
     }
     response = requests.get(tmdb_base_url, params=params)
     data = response.json()
@@ -132,7 +133,7 @@ def main():
                     direct_url = grab_streaming_url(post_id)
                     if direct_url:
                         print(f"Valid MP4 URL found: {direct_url}")
-                        tmdb_data = search_tmdb(title, year, post_id)
+                        tmdb_data = search_tmdb(title, year, post_id, direct_url)
                         if tmdb_data:
                             tmdb_data['Video'] = direct_url
                             movies.append(tmdb_data)
