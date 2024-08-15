@@ -36,4 +36,4 @@ for i in range(1, 11):
 
 # Print out the list of movies
 print(movies)
-print(soup)
+print(soup[:1000])
