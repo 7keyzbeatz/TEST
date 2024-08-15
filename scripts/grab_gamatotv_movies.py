@@ -26,7 +26,7 @@ def search_tmdb(title, year, post_id):
     if data['results']:
         # Get the first result
         result = data['results'][0]
-        return {
+        movie_data = {
             'TMDB_ID': result['id'],
             'Title': result['title'],  # Use title
             'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
@@ -34,32 +34,24 @@ def search_tmdb(title, year, post_id):
             'isUnlocked': True,
             'Fetch': 'GamatoTV'
         }
+        print(f"Found movie: {movie_data['Title']} (ID: {movie_data['TMDB_ID']})")
+        return movie_data
+    print(f"No results found for title: {title} ({year})")
     return None
 
-# Function to save data to a JSON file
-def save_to_file(batch_json, batch_index):
-    file_name = f'movies_batch_{batch_index}.json'
+# Function to save all movies to a single JSON file
+def save_to_file(movies):
+    file_path = 'movies.json'
     try:
-        with open(file_name, 'w', encoding='utf-8') as file:
-            file.write(batch_json)
-        print(f'Successfully saved batch {batch_index} to {file_name}')
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump({"Movies": movies}, file, indent=4, ensure_ascii=False)
+        print(f'Successfully saved all movies to {file_path}')
     except IOError as e:
-        print(f"Error saving batch {batch_index} to file: {e}")
-
-# Function to save all movies to JSON files
-def save_all_movies(movies):
-    batch_size = 50
-    for i in range(0, len(movies), batch_size):
-        batch = movies[i:i + batch_size]
-        batch_index = i // batch_size + 1  # Calculate batch index (1-based)
-        batch_json = json.dumps({"Movies": batch}, indent=4, ensure_ascii=False)
-        
-        # Save the batch JSON to a file
-        save_to_file(batch_json, batch_index)
+        print(f"Error saving movies to file: {e}")
 
 # Main scraping loop
 try:
-    for page in range(1, 11):
+    for page in range(1, 111):
         # Construct the URL for each page
         url = f'{base_url}page/{page}/' if page > 1 else base_url
         
@@ -92,6 +84,9 @@ try:
                 year = full_title.split('(')[-1].replace(')', '')  # Extracts year
                 title = full_title.split('(')[0].strip()  # Removes year from title
                 
+                # Print movie details being processed
+                print(f"Processing movie: {title} ({year}) with post ID: {post_id}")
+                
                 # Search TMDB for the movie
                 tmdb_data = search_tmdb(title, year, post_id)
                 if tmdb_data:
@@ -100,10 +95,5 @@ try:
 except Exception as e:
     print(f"An error occurred: {e}")
 
-# Ensure the directory exists and save all movies to JSON files
-if not os.path.exists('json_files'):
-    os.makedirs('json_files')
-    
-os.chdir('json_files')
-
-save_all_movies(movies)
+# Save all movies to a single JSON file in the root directory
+save_to_file(movies)
