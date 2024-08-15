@@ -36,12 +36,13 @@ def search_tmdb(title, year, post_id, direct_url):
     if data['results']:
         result = data['results'][0]
         movie_data = {
+            'Fetch': 'GamatoTV'
             'TMDB_ID': result['id'],
             'Title': result['title'],
             'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
             'Video': post_id,
-            'isUnlocked': True,
-            'Fetch': 'GamatoTV'
+            'DirectVideo': 'null',
+            'isUnlocked': True
         }
         print(f"Found movie: {movie_data['Title']} (ID: {movie_data['TMDB_ID']})")
         return movie_data
@@ -137,7 +138,7 @@ def main():
                         print(f"Valid MP4 URL found: {direct_url}")
                         tmdb_data = search_tmdb(title, year, post_id, direct_url)
                         if tmdb_data:
-                            tmdb_data['Video'] = direct_url
+                            tmdb_data['DirectVideo'] = direct_url
                             movies.append(tmdb_data)
                     else:
                         print(f"No valid MP4 URL found for post ID: {post_id}")
