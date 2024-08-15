@@ -61,13 +61,18 @@ def fetch_html(url):
 # Function to grab player URLs
 def grab_player_urls(input_html):
     if input_html:
-        url_pattern = r"http://gmtcloud\.best/\S+"
+        # Improved regex pattern to ensure valid URL extraction
+        url_pattern = r"http://gmtcloud\.best/\S+(?=\")"
         return re.findall(url_pattern, input_html)
     return []
 
 # Function to grab direct URL
 def grab_direct_url(input_html):
     if input_html:
+        # Check if the HTML contains "coverapi.store"
+        if "coverapi.store" in input_html:
+            return None
+        
         url_pattern = r"http://gmtcloud\.site/video/movies/[\w%\-\.]+\.mp4\?id=\d+"
         match = re.search(url_pattern, input_html)
         if match:
