@@ -46,7 +46,7 @@ def generate_network_report(access_token):
             },
             "dimensions": ["DATE"],
             "metrics": ["MATCH_RATE"],
-            "timeZone": []  # Note: Adjust based on whether you need a specific time zone or not
+            "timeZone": "America/Los_Angeles"  # Replace with the appropriate time zone
         }
     }
     
