@@ -1,4 +1,4 @@
-name: Upload Remote File to Archive.org
+name: Upload File to Archive.org
 
 on:
   workflow_dispatch: # Allows you to manually trigger the workflow
@@ -12,14 +12,16 @@ jobs:
       run: |
         curl -L -o video.mp4 "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     
-    - name: Install internetarchive tool
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-pip
-        pip3 install internetarchive
-
     - name: Upload to Archive.org
       env:
-        ARCHIVE_ORG_ACCESS_TOKEN: ${{ secrets.ARCHIVE_ORG_ACCESS_TOKEN }}
+        ACCESS_KEY: ${{ secrets.ARCHIVE_ORG_ACCESS_KEY }}
+        SECRET_KEY: ${{ secrets.ARCHIVE_ORG_SECRET_KEY }}
       run: |
-        ia upload "your-archive-item-name" video.mp4 --metadata="title:Your Video Title" --metadata="description:Your Video Description"
+        curl --location --header 'x-amz-auto-make-bucket:1' \
+             --header 'x-archive-meta01-collection:opensource' \
+             --header 'x-archive-meta-mediatype:texts' \
+             --header 'x-archive-meta-sponsor:Andrew W. Mellon Foundation' \
+             --header 'x-archive-meta-language:eng' \
+             --header "authorization: LOW $ACCESS_KEY:$SECRET_KEY" \
+             --upload-file 25xiliades.mp4 \
+             http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
