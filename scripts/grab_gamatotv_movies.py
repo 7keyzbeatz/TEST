@@ -69,7 +69,8 @@ def grab_player_url(input_html):
 # Function to grab direct URL
 def grab_direct_url(input_html):
     if input_html:
-        url_pattern = r"http://gmtcloud\.site/video/movies/[w%\\-.]+\.mp4\?id=\d+"
+        # Updated pattern with correct escaping and character class
+        url_pattern = r"http://gmtcloud\.site/video/movies/[\w%\-\.]+\.mp4\?id=\d+"
         match = re.search(url_pattern, input_html)
         if match:
             return match.group()
