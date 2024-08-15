@@ -1,0 +1,25 @@
+name: Upload Remote File to Archive.org
+
+on:
+  workflow_dispatch: # Allows you to manually trigger the workflow
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Remote File
+      run: |
+        curl -L -o video.mp4 "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    
+    - name: Install internetarchive tool
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
+        pip3 install internetarchive
+
+    - name: Upload to Archive.org
+      env:
+        ARCHIVE_ORG_ACCESS_TOKEN: ${{ secrets.ARCHIVE_ORG_ACCESS_TOKEN }}
+      run: |
+        ia upload "your-archive-item-name" video.mp4 --metadata="title=Your Video Title" --metadata="description=Your Video Description"
