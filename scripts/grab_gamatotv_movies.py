@@ -32,8 +32,6 @@ for url in urls:
             'id': post_id
         })
 
-# Write the data to a JSON file
-with open('movie_data.json', 'w') as f:
-    json.dump(all_movies, f, ensure_ascii=False, indent=4)
-
-print("Scraping complete. Data saved to movie_data.json")
+# Convert the list of movies to JSON and print it
+json_output = json.dumps(all_movies, ensure_ascii=False, indent=4)
+print(json_output)
