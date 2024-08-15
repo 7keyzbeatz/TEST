@@ -19,9 +19,9 @@ jobs:
       run: |
         curl --location --header 'x-amz-auto-make-bucket:1' \
              --header 'x-archive-meta01-collection:opensource' \
-             --header 'x-archive-meta-mediatype:texts' \
+             --header 'x-archive-meta-mediatype:video' \
              --header 'x-archive-meta-sponsor:Andrew W. Mellon Foundation' \
              --header 'x-archive-meta-language:eng' \
              --header "authorization: LOW $ACCESS_KEY:$SECRET_KEY" \
              --upload-file 25xiliades.mp4 \
-             http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
+             http://s3.us.archive.org/your-bucket-name/25xiliades.mp4
