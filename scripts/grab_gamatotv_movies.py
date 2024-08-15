@@ -36,7 +36,7 @@ def search_tmdb(title, year, post_id, direct_url):
     if data['results']:
         result = data['results'][0]
         movie_data = {
-            'Fetch': 'GamatoTV'
+            'Fetch': 'GamatoTV',
             'TMDB_ID': result['id'],
             'Title': result['title'],
             'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
