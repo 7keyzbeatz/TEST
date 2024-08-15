@@ -23,7 +23,7 @@ def get_access_token():
 
 # Step 2: Use the access token to make a request to the AdMob API
 def get_admob_data(access_token):
-    api_url = 'https://admob.googleapis.com/v1/your_admob_api_endpoint'
+    api_url = 'https://admob.googleapis.com/v1/accounts/pub-1669215305824306'
     headers = {
         'Authorization': f'Bearer {access_token}',
     }
