@@ -27,14 +27,14 @@ def search_tmdb(title, year):
         result = data['results'][0]
         return {
             'TMDB_ID': result['id'],
-            'Title': result['original_title'],
-            'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
-            'Video': result['id'],
+            'Title': result['title'],
+            'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}" if result['poster_path'] else '',
+            'Video': None,  # This will be set later
             'isUnlocked': True
         }
     return None
 
-# Loop through pages 1 to 10
+# Loop through pages 1 to 50
 for page in range(1, 51):
     # Construct the URL for each page
     url = f'{base_url}page/{page}/' if page > 1 else base_url
@@ -71,6 +71,7 @@ for page in range(1, 51):
             # Search TMDB for the movie
             tmdb_data = search_tmdb(title, year)
             if tmdb_data:
+                tmdb_data['Video'] = post_id  # Set the Video field to the extracted post ID
                 tmdb_data['Fetch'] = 'GamatoTV'
                 movies.append(tmdb_data)
 
