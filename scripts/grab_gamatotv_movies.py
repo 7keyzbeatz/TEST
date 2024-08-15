@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-import os
+import re
 
 # Base URL to scrape
 base_url = 'https://gamatotv.info/el/comedy/'
@@ -18,7 +18,6 @@ def search_tmdb(title, year, post_id):
     params = {
         'query': title,
         'api_key': tmdb_api_key,
-        # 'language': 'el-GR',
         'year': year
     }
     response = requests.get(tmdb_base_url, params=params)
@@ -38,6 +37,48 @@ def search_tmdb(title, year, post_id):
     print(f"No results found for title: {title} ({year})")
     return None
 
+# Function to fetch the HTML content of a URL
+def fetch_html(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        print(f"Error fetching URL {url}: {e}")
+        return None
+
+# Function to grab player URL
+def grab_player_url(input_html):
+    if input_html:
+        url_pattern = r"http://gmtcloud\.best/\S*"
+        match = re.search(url_pattern, input_html)
+        if match:
+            return match.group().split('"')[0]
+    return None
+
+# Function to grab direct URL
+def grab_direct_url(input_html):
+    if input_html:
+        url_pattern = r"http://gmtcloud\.site/video/movies/[w%\\-.]+\.mp4\?id=\d+"
+        match = re.search(url_pattern, input_html)
+        if match:
+            return match.group()
+    return None
+
+# Function to grab streaming URL
+def grab_streaming_url(post_id):
+    url = f"https://gamatotv.info/{post_id}"
+    html = fetch_html(url)
+    if html:
+        player_url = grab_player_url(html)
+        if player_url:
+            player_html = fetch_html(player_url)
+            if player_html:
+                direct_url = grab_direct_url(player_html)
+                if direct_url and 'mp4' in direct_url:
+                    return direct_url
+    return None
+
 # Function to save all movies to a single JSON file
 def save_to_file(movies):
     file_path = 'movies.json'
@@ -51,7 +92,7 @@ def save_to_file(movies):
 
 # Main scraping loop
 try:
-    for page in range(1, 111):
+    for page in range(1, 11):
         url = f'{base_url}page/{page}/' if page > 1 else base_url
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -71,9 +112,15 @@ try:
                 year = full_title.split('(')[-1].replace(')', '')
                 title = full_title.split('(')[0].strip()
                 print(f"Processing movie: {title} ({year}) with post ID: {post_id}")
-                tmdb_data = search_tmdb(title, year, post_id)
-                if tmdb_data:
-                    movies.append(tmdb_data)
+                direct_url = grab_streaming_url(post_id)
+                if direct_url:
+                    print(f"Valid MP4 URL found: {direct_url}")
+                    tmdb_data = search_tmdb(title, year, post_id)
+                    if tmdb_data:
+                        tmdb_data['Video'] = direct_url
+                        movies.append(tmdb_data)
+                else:
+                    print(f"No valid MP4 URL found for post ID: {post_id}")
     if movies:
         save_to_file(movies)
     else:
