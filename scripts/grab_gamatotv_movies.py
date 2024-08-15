@@ -36,7 +36,7 @@ def search_tmdb(title, year, post_id):
     return None
 
 # Loop through the first 10 pages
-for page in range(1, 11):
+for page in range(400, 523):
     # Construct the URL for each page
     url = f'{base_url}page/{page}/' if page > 1 else base_url
     
