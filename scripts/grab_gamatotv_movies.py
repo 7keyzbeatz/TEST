@@ -28,7 +28,7 @@ def search_tmdb(title, year):
             result = data['results'][0]
             return {
                 'TMDB_ID': result['id'],
-                'Title': result['original_title'],
+                'Title': result['title'],
                 'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}" if result['poster_path'] else '',
                 'Video': None,  # This will be set later
                 'isUnlocked': True
