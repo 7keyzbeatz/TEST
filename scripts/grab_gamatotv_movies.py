@@ -19,42 +19,24 @@ for page in range(1, 11):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     
-    # Convert the soup object to a string for substring search
-    html_content = str(soup)
-    
-    # Find the index of the string '<div id="content">'
-    start_index = html_content.find('<div id="content">')
-    
-    # Slice the string from the start_index to focus only on the main content
-    if start_index != -1:
-        sliced_content = html_content[start_index:]
-        print(sliced_content)
-    else:
+    # Find the main content div
+    content_div = soup.find('div', id='content')
+    if not content_div:
         print(f"'<div id=\"content\">' not found in the HTML content for page {page}")
-        continue  # Skip to the next page if the content div is not found
+        continue
     
-    # Now, look for posts that start with '<div id="post-' within the sliced content
-    start_index = 0
-    while True:
-        # Find the next occurrence of '<div id="post-'
-        start_index = sliced_content.find('<div id="post-', start_index)
-        if start_index == -1:
-            break
-        
-        # Extract the substring that contains the post information
-        end_index = sliced_content.find('</div>', start_index) + 6  # include '</div>' in the slice
-        post_content = sliced_content[start_index:end_index]
-        
-        # Create a soup object for the extracted post content
-        post_soup = BeautifulSoup(post_content, 'html.parser')
-        
+    # Find all post entries
+    posts = content_div.find_all('div', id=lambda x: x and x.startswith('post-'))
+    if not posts:
+        print(f"No posts found on page {page}")
+        continue
+    
+    for post in posts:
         # Extract post ID
-        post_div = post_soup.find('div', id=True)
-        post_id_raw = post_div.get('id')
-        post_id = post_id_raw.replace('post-', '') if post_id_raw else 'unknown'
+        post_id = post.get('id').replace('post-', '')
         
         # Extract movie title and year
-        title_tag = post_soup.find('h1', class_='post-title')
+        title_tag = post.find('h1', class_='post-title')
         if title_tag:
             full_title = title_tag.get_text(strip=True)
             
@@ -68,9 +50,6 @@ for page in range(1, 11):
                 'Title': title,
                 'Year': year
             })
-        
-        # Move the start_index to the end of the current post to find the next one
-        start_index = end_index
 
 # Print out the list of movies with IDs
 print("Extracted Movies with IDs:")
