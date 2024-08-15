@@ -23,5 +23,5 @@ jobs:
              --header 'x-archive-meta-sponsor:Andrew W. Mellon Foundation' \
              --header 'x-archive-meta-language:eng' \
              --header "authorization: LOW $ACCESS_KEY:$SECRET_KEY" \
-             --upload-file 25xiliades.mp4 \
+             --upload-file video.mp4 \
              http://s3.us.archive.org/your-bucket-name/25xiliades.mp4
