@@ -17,7 +17,7 @@ def search_tmdb(title, year):
     params = {
         'query': title,
         'api_key': tmdb_api_key,
-        'language': 'el-GR',
+        # 'language': 'el-GR',
         'year': year
     }
     response = requests.get(tmdb_base_url, params=params)
@@ -36,7 +36,7 @@ def search_tmdb(title, year):
     return None
 
 # Loop through pages 1 to 50
-for page in range(1, 51):
+for page in range(1, 11):
     # Construct the URL for each page
     url = f'{base_url}page/{page}/' if page > 1 else base_url
     
@@ -80,9 +80,11 @@ for page in range(1, 51):
                 tmdb_data['Fetch'] = 'GamatoTV'
                 movies.append(tmdb_data)
 
-# Print out the list of movies in JSON format
+# Save the list of movies to a JSON file
+json_filename = 'movies_data.json'
 try:
-    movies_json = json.dumps({"Movies": movies}, indent=4, ensure_ascii=False)
-    print(movies_json)
+    with open(json_filename, 'w', encoding='utf-8') as f:
+        json.dump({"Movies": movies}, f, indent=4, ensure_ascii=False)
+    print(f"Data successfully saved to {json_filename}")
 except Exception as e:
-    print(f"Error serializing JSON: {e}")
+    print(f"Error saving JSON file: {e}")
