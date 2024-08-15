@@ -21,7 +21,14 @@ for url in urls:
     
     for post in posts:
         # Extract movie title and year
-        title = post.find('h1', class_='post-title').get_text(strip=True)
+        title_tag = post.find('h1', class_='post-title')
+        
+        # Check if the title tag is found
+        if title_tag is not None:
+            title = title_tag.get_text(strip=True)
+        else:
+            # Skip this post if no title is found
+            continue
         
         # Extract post ID from the div ID
         post_id = post.get('id').replace('post-', '')
