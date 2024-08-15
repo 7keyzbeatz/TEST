@@ -22,17 +22,27 @@ for page in range(1, 11):
     # Convert the soup object to a string for substring search
     html_content = str(soup)
     
-    # Look for posts that start with '<div id="post-' to extract relevant data
+    # Find the index of the string '<div id="content">'
+    start_index = html_content.find('<div id="content">')
+    
+    # Slice the string from the start_index to focus only on the main content
+    if start_index != -1:
+        sliced_content = html_content[start_index:]
+    else:
+        print(f"'<div id=\"content\">' not found in the HTML content for page {page}")
+        continue  # Skip to the next page if the content div is not found
+    
+    # Now, look for posts that start with '<div id="post-' within the sliced content
     start_index = 0
     while True:
         # Find the next occurrence of '<div id="post-'
-        start_index = html_content.find('<div id="post-', start_index)
+        start_index = sliced_content.find('<div id="post-', start_index)
         if start_index == -1:
             break
         
         # Extract the substring that contains the post information
-        end_index = html_content.find('</div>', start_index)
-        post_content = html_content[start_index:end_index]
+        end_index = sliced_content.find('</div>', start_index) + 6  # include '</div>' in the slice
+        post_content = sliced_content[start_index:end_index]
         
         # Create a soup object for the extracted post content
         post_soup = BeautifulSoup(post_content, 'html.parser')
