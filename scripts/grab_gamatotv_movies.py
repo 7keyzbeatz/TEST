@@ -58,19 +58,16 @@ def fetch_html(url):
         print(f"Error fetching URL {url}: {e}")
         return None
 
-# Function to grab player URL
-def grab_player_url(input_html):
+# Function to grab player URLs
+def grab_player_urls(input_html):
     if input_html:
         url_pattern = r"http://gmtcloud\.best/\S+"
-        match = re.search(url_pattern, input_html)
-        if match:
-            return match.group().split('"')[0]
-    return None
+        return re.findall(url_pattern, input_html)
+    return []
 
 # Function to grab direct URL
 def grab_direct_url(input_html):
     if input_html:
-        # Updated pattern with correct escaping and character class
         url_pattern = r"http://gmtcloud\.site/video/movies/[\w%\-\.]+\.mp4\?id=\d+"
         match = re.search(url_pattern, input_html)
         if match:
@@ -82,8 +79,8 @@ def grab_streaming_url(post_id):
     url = f"https://gamatotv.info/{post_id}"
     html = fetch_html(url)
     if html:
-        player_url = grab_player_url(html)
-        if player_url:
+        player_urls = grab_player_urls(html)
+        for player_url in player_urls:
             player_html = fetch_html(player_url)
             if player_html:
                 direct_url = grab_direct_url(player_html)
@@ -124,7 +121,7 @@ def main():
                 continue
             for post in posts:
                 post_id = post.get('id').replace('post-', '')
-                title_tag = post.find('h1', class_='post-title')
+                title_tag = post.find('h1', class='post-title')
                 if title_tag:
                     full_title = title_tag.get_text(strip=True)
                     year = full_title.split('(')[-1].replace(')', '')
