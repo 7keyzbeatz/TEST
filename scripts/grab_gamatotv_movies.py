@@ -24,18 +24,19 @@ for i in range(1, 11):
         title_tag = post.find('h1', class_='post-title')
         if title_tag:
             title = title_tag.get_text(strip=True)
-
+            
             # Extract post ID from the div ID
-            post_id = post.get('id').replace('post-', '') if post.get('id') else 'unknown'
-
+            post_id_raw = post.get('id')
+            post_id = post_id_raw.replace('post-', '') if post_id_raw else 'unknown'
+            
             # Add the movie data to the list
             movies.append({
                 'id': post_id,
                 'title': title,
             })
 
-# Print out the list of movies
-print("Extracted Movies:")
+# Print out the list of movies with IDs
+print("Extracted Movies with IDs:")
 for movie in movies:
     print(f"ID: {movie['id']}, Title: {movie['title']}")
 
@@ -65,10 +66,18 @@ if start_index != -1:
     for post in posts:
         title_tag = post.find('h1', class_='post-title')
         if title_tag:
-            title = title_tag.get_text(strip=True)
-            year = title.split('(')[-1].replace(')', '')  # Simple year extraction if it follows the title in parentheses
+            full_title = title_tag.get_text(strip=True)
+            
+            # Extract the year and remove it from the title
+            year = full_title.split('(')[-1].replace(')', '')  # Extracts year
+            title = full_title.split('(')[0].strip()  # Removes year from title
+            
+            # Extract post ID from the div ID
+            post_id_raw = post.get('id')
+            post_id = post_id_raw.replace('post-', '') if post_id_raw else 'unknown'
             
             extracted_data.append({
+                'ID': post_id,
                 'Title': title,
                 'Year': year
             })
@@ -76,6 +85,6 @@ if start_index != -1:
     # Print the extracted data
     print("\nExtracted Data from Sliced Content:")
     for item in extracted_data:
-        print(f"Title: {item['Title']}, Year: {item['Year']}")
+        print(f"ID: {item['ID']}, Title: {item['Title']}, Year: {item['Year']}")
 else:
     print("Skipping extraction from sliced content as the start tag was not found.")
