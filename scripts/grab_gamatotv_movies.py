@@ -30,7 +30,8 @@ def search_tmdb(title, year, post_id):
             'Title': result['title'],  # Use title
             'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
             'Video': post_id,  # Set Video as post ID
-            'isUnlocked': True
+            'isUnlocked': True,
+            'Fetch': 'GamatoTV'
         }
     return None
 
@@ -71,10 +72,9 @@ for page in range(1, 11):
             # Search TMDB for the movie
             tmdb_data = search_tmdb(title, year, post_id)
             if tmdb_data:
-                tmdb_data['Fetch'] = 'GamatoTV'
                 movies.append(tmdb_data)
 
-# Print movies in batches of 50 with indexing
+# Print movies in batches of 50
 batch_size = 50
 for i in range(0, len(movies), batch_size):
     batch = movies[i:i + batch_size]
@@ -84,4 +84,4 @@ for i in range(0, len(movies), batch_size):
     # Print the batch JSON
     print(f"Batch {batch_index} - {batch_index + len(batch) - 1}:")
     print(batch_json)
-    input("Press Enter to continue to the next batch...")
+    # No user input prompt; the script will simply print each batch
