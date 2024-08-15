@@ -1,10 +1,22 @@
 name: Scrape Movie Data
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL for scraping'
+        required: true
+        default: 'https://gamatotv.info/el/comedy/'
+      start_page:
+        description: 'Start page number'
+        required: true
+        default: 1
+        type: number
+      end_page:
+        description: 'End page number'
+        required: true
+        default: 10
+        type: number
 
 jobs:
   scrape:
@@ -26,7 +38,10 @@ jobs:
 
     - name: Run Scrape Script
       run: |
-        python scripts/grab_gamatotv_movies.py
+        python scripts/grab_gamatotv_movies.py \
+          --base_url "${{ github.event.inputs.base_url }}" \
+          --start_page "${{ github.event.inputs.start_page }}" \
+          --end_page "${{ github.event.inputs.end_page }}"
 
     - name: Upload results
       uses: actions/upload-artifact@v3
