@@ -1,19 +1,43 @@
 import requests
 from bs4 import BeautifulSoup
+import json
 
 # Base URL to scrape
 base_url = 'https://gamatotv.info/el/tainies/'
 
+# TMDB API key and base URL
+tmdb_api_key = '753fba9d8bfbd1068ebd0b4437209a8a'
+tmdb_base_url = 'https://api.themoviedb.org/3/search/movie'
+
 # Initialize a list to store movie data
 movies = []
 
+# Function to search TMDB for a movie and return the first result
+def search_tmdb(title, year):
+    params = {
+        'query': title,
+        'api_key': tmdb_api_key,
+        'language': 'el-GR',
+        'year': year
+    }
+    response = requests.get(tmdb_base_url, params=params)
+    data = response.json()
+    if data['results']:
+        # Get the first result
+        result = data['results'][0]
+        return {
+            'TMDB_ID': result['id'],
+            'Title': result['original_title'],
+            'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}",
+            'Video': result['id'],
+            'isUnlocked': True
+        }
+    return None
+
 # Loop through pages 1 to 10
-for page in range(1, 111):
+for page in range(1, 1):
     # Construct the URL for each page
-    if page == 1:
-        url = base_url
-    else:
-        url = f'{base_url}page/{page}/'
+    url = f'{base_url}page/{page}/' if page > 1 else base_url
     
     # Fetch the content of the page
     response = requests.get(url)
@@ -44,14 +68,12 @@ for page in range(1, 111):
             year = full_title.split('(')[-1].replace(')', '')  # Extracts year
             title = full_title.split('(')[0].strip()  # Removes year from title
             
-            # Add the movie data to the list
-            movies.append({
-                'ID': post_id,
-                'Title': title,
-                'Year': year
-            })
+            # Search TMDB for the movie
+            tmdb_data = search_tmdb(title, year)
+            if tmdb_data:
+                tmdb_data['Fetch'] = 'GamatoTV'
+                movies.append(tmdb_data)
 
-# Print out the list of movies with IDs
-print("Extracted Movies with IDs:")
-for movie in movies:
-    print(f"ID: {movie['ID']}, Title: {movie['Title']}, Year: {movie['Year']}")
+# Print out the list of movies in JSON format
+movies_json = json.dumps({"Movies": movies}, indent=4, ensure_ascii=False)
+print(movies_json)
