@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 import json
 import os
 
+with open('test_file.txt', 'w') as file:
+    file.write("This is a test file.")
+
 # Base URL to scrape
 base_url = 'https://gamatotv.info/el/comedy/'
 
@@ -51,7 +54,7 @@ def save_to_file(movies):
 
 # Main scraping loop
 try:
-    for page in range(1, 111):
+    for page in range(1, 2):
         # Construct the URL for each page
         url = f'{base_url}page/{page}/' if page > 1 else base_url
         
