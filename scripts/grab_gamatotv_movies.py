@@ -121,7 +121,7 @@ def main():
                 continue
             for post in posts:
                 post_id = post.get('id').replace('post-', '')
-                title_tag = post.find('h1', class='post-title')
+                title_tag = post.find('h1', class_='post-title')
                 if title_tag:
                     full_title = title_tag.get_text(strip=True)
                     year = full_title.split('(')[-1].replace(')', '')
