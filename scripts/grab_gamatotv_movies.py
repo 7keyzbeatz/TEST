@@ -1,69 +1,29 @@
 import requests
 from bs4 import BeautifulSoup
 
-# URL to scrape
-url = 'https://gamatotv.info/el/tainies'
-
-# Fetch the content
-response = requests.get(url)
-soup = BeautifulSoup(response.content, 'html.parser')
+# Base URL to scrape
+base_url = 'https://gamatotv.info/el/tainies/'
 
 # Initialize a list to store movie data
 movies = []
 
-# Loop through post-1 to post-10
-for i in range(1, 11):
-    # Construct the class string for each post
-    post_class = f'hentry post publish post-{i}'
+# Loop through pages 1 to 10
+for page in range(1, 11):
+    # Construct the URL for each page
+    if page == 1:
+        url = base_url
+    else:
+        url = f'{base_url}page/{page}/'
     
-    # Find the post with the specific class
-    post = soup.find('div', class_=post_class)
+    # Fetch the content of the page
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
     
-    if post:
-        # Extract movie title and year
-        title_tag = post.find('h1', class_='post-title')
-        if title_tag:
-            title = title_tag.get_text(strip=True)
-            
-            # Extract post ID from the div ID
-            post_id_raw = post.get('id')
-            post_id = post_id_raw.replace('post-', '') if post_id_raw else 'unknown'
-            
-            # Add the movie data to the list
-            movies.append({
-                'id': post_id,
-                'title': title,
-            })
-
-# Print out the list of movies with IDs
-print("Extracted Movies with IDs:")
-for movie in movies:
-    print(f"ID: {movie['id']}, Title: {movie['title']}")
-
-# Convert the soup object to a string
-html_content = str(soup)
-
-# Find the index of the string '<div id="content">'
-start_index = html_content.find('<div id="content">')
-
-# Slice the string from the start_index to the end
-if start_index != -1:
-    sliced_content = html_content[start_index:]
-    print("\nSliced Content Starting from <div id=\"content\">:")
-    print(sliced_content[:1000])  # Print the first 1000 characters to avoid overwhelming output
-else:
-    print("'<div id=\"content\">' not found in the HTML content")
-
-# Parse the sliced content with BeautifulSoup for further processing
-if start_index != -1:
-    sliced_soup = BeautifulSoup(sliced_content, 'html.parser')
-    
-    # Example: Find all divs with class 'hentry'
-    posts = sliced_soup.find_all('div', class_='hentry')
-    
-    extracted_data = []
+    # Find all posts on the current page
+    posts = soup.find_all('div', class_='hentry post publish')
 
     for post in posts:
+        # Extract movie title and year
         title_tag = post.find('h1', class_='post-title')
         if title_tag:
             full_title = title_tag.get_text(strip=True)
@@ -76,15 +36,14 @@ if start_index != -1:
             post_id_raw = post.get('id')
             post_id = post_id_raw.replace('post-', '') if post_id_raw else 'unknown'
             
-            extracted_data.append({
+            # Add the movie data to the list
+            movies.append({
                 'ID': post_id,
                 'Title': title,
                 'Year': year
             })
 
-    # Print the extracted data
-    print("\nExtracted Data from Sliced Content:")
-    for item in extracted_data:
-        print(f"ID: {item['ID']}, Title: {item['Title']}, Year: {item['Year']}")
-else:
-    print("Skipping extraction from sliced content as the start tag was not found.")
+# Print out the list of movies with IDs
+print("Extracted Movies with IDs:")
+for movie in movies:
+    print(f"ID: {movie['ID']}, Title: {movie['Title']}, Year: {movie['Year']}")
