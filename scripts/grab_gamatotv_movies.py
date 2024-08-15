@@ -36,4 +36,16 @@ for i in range(1, 11):
 
 # Print out the list of movies
 print(movies)
-print((str(soup))[1000:])
+
+# Convert the soup object to a string
+html_content = str(soup)
+
+# Find the index of the string '<div id="content">'
+start_index = html_content.find('<div id="content">')
+
+# Slice the string from the start_index to the end
+if start_index != -1:
+    sliced_content = html_content[start_index:]
+    print(sliced_content)
+else:
+    print("'<div id=\"content\">' not found in the HTML content")
