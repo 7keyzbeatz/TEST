@@ -17,7 +17,7 @@ def search_tmdb(title, year):
     params = {
         'query': title,
         'api_key': tmdb_api_key,
-        # 'language': 'el-GR',
+        'language': 'el-GR',
         'year': year
     }
     response = requests.get(tmdb_base_url, params=params)
