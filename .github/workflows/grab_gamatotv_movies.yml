@@ -27,3 +27,9 @@ jobs:
     - name: Scrape Movie Data
       run: |
         python scripts/grab_gamatotv_movies.py
+      
+    - name: Upload results
+      uses: actions/upload-artifact@v3
+      with:
+        name: movie-data
+        path: movies.json
