@@ -6,6 +6,9 @@ CLIENT_ID = '824351498537-5gra4r14ngcgeti42a9hl1qjb2geti6j.apps.googleuserconten
 CLIENT_SECRET = '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'
 REFRESH_TOKEN = '1//09YOifK_foTerCgYIARAAGAkSNwF-L9IrRISLb6ERCdcR5GOED6LyTH19YEoM2cHlSyqExP-Bnp6xD8xU7n_4hRoDO5veLAEi4c8'
 
+# Your Publisher ID
+PUBLISHER_ID = 'pub-1669215305824306'
+
 # Step 1: Use the refresh token to get a new access token
 def get_access_token():
     token_url = 'https://oauth2.googleapis.com/token'
@@ -24,10 +27,9 @@ def get_access_token():
 
 # Step 2: Use the access token to make a POST request to the AdMob API
 def generate_network_report(access_token):
-    # AdMob API endpoint for generating a network report
-    api_url = 'https://admob.googleapis.com/v1/accounts/pub-1669215305824306/networkReport:generate'
+    api_url = f'https://admob.googleapis.com/v1/accounts/{PUBLISHER_ID}/networkReport:generate'
     
-    # Define the request body for the report
+    # Define the request body based on actual API documentation
     request_body = {
         "dateRange": {
             "startDate": {"year": 2024, "month": 1, "day": 1},
