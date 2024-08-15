@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # URL to scrape
-url = 'https://gamatotv.info/category/tainies'
+url = 'https://gamatotv.info/el/tainies'
 
 # Fetch the content
 response = requests.get(url)
