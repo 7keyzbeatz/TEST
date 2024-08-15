@@ -1,4 +1,5 @@
 import requests
+import json
 
 # Your client credentials
 CLIENT_ID = '824351498537-5gra4r14ngcgeti42a9hl1qjb2geti6j.apps.googleusercontent.com'
@@ -19,25 +20,40 @@ def get_access_token():
         access_token = response.json().get('access_token')
         return access_token
     else:
-        raise Exception("Failed to refresh token: {}".format(response.text))
+        raise Exception(f"Failed to refresh token: {response.text}")
 
-# Step 2: Use the access token to make a request to the AdMob API
-def get_admob_data(access_token):
-    api_url = 'https://admob.googleapis.com/v1/accounts/pub-1669215305824306'
+# Step 2: Use the access token to make a POST request to the AdMob API
+def generate_network_report(access_token):
+    # AdMob API endpoint for generating a network report
+    api_url = 'https://admob.googleapis.com/v1/accounts/pub-1669215305824306/networkReport:generate'
+    
+    # Define the request body for the report
+    request_body = {
+        "dateRange": {
+            "startDate": {"year": 2024, "month": 1, "day": 1},
+            "endDate": {"year": 2024, "month": 1, "day": 31}
+        },
+        "dimensions": ["DATE", "AD_UNIT_ID"],
+        "metrics": ["ESTIMATED_EARNINGS", "IMPRESSIONS"]
+    }
+    
     headers = {
         'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
     }
-    response = requests.get(api_url, headers=headers)
+    
+    response = requests.post(api_url, headers=headers, data=json.dumps(request_body))
+    
     if response.status_code == 200:
         return response.json()
     else:
-        raise Exception("Failed to fetch AdMob data: {}".format(response.text))
+        raise Exception(f"Failed to generate network report: {response.text}")
 
 # Example usage:
 if __name__ == "__main__":
     try:
         access_token = get_access_token()
-        admob_data = get_admob_data(access_token)
-        print(admob_data)
+        report_data = generate_network_report(access_token)
+        print(json.dumps(report_data, indent=2))
     except Exception as e:
         print(e)
