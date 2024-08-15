@@ -57,28 +57,25 @@ else:
 if start_index != -1:
     sliced_soup = BeautifulSoup(sliced_content, 'html.parser')
     
-    # Example: Find all rows in the sliced content table (if applicable)
-    rows = sliced_soup.find_all('tr', {'class': 'odd'})
-
-    # List to store extracted data
+    # Example: Find all divs with class 'hentry'
+    posts = sliced_soup.find_all('div', class_='hentry')
+    
     extracted_data = []
 
-    for row in rows:
-        # Extract ID, Title, and Year
-        id_text = row.find('td', {'class': 'coll-1'}).get_text(strip=True)
-        title = row.find('td', {'class': 'coll-2'}).find('a').get_text(strip=True)
-        year = row.find('td', {'class': 'coll-3'}).get_text(strip=True)
-        
-        # Append to list as a dictionary
-        extracted_data.append({
-            'ID': id_text,
-            'Title': title,
-            'Year': year
-        })
+    for post in posts:
+        title_tag = post.find('h1', class_='post-title')
+        if title_tag:
+            title = title_tag.get_text(strip=True)
+            year = title.split('(')[-1].replace(')', '')  # Simple year extraction if it follows the title in parentheses
+            
+            extracted_data.append({
+                'Title': title,
+                'Year': year
+            })
 
     # Print the extracted data
     print("\nExtracted Data from Sliced Content:")
     for item in extracted_data:
-        print(f"ID: {item['ID']}, Title: {item['Title']}, Year: {item['Year']}")
+        print(f"Title: {item['Title']}, Year: {item['Year']}")
 else:
     print("Skipping extraction from sliced content as the start tag was not found.")
