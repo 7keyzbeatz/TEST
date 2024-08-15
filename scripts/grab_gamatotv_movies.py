@@ -8,7 +8,7 @@ base_url = 'https://gamatotv.info/el/tainies/'
 movies = []
 
 # Loop through pages 1 to 10
-for page in range(1, 11):
+for page in range(1, 111):
     # Construct the URL for each page
     if page == 1:
         url = base_url
