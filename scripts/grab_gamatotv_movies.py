@@ -21,17 +21,18 @@ def search_tmdb(title, year):
         'year': year
     }
     response = requests.get(tmdb_base_url, params=params)
-    data = response.json()
-    if data['results']:
-        # Get the first result
-        result = data['results'][0]
-        return {
-            'TMDB_ID': result['id'],
-            'Title': result['title'],
-            'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}" if result['poster_path'] else '',
-            'Video': None,  # This will be set later
-            'isUnlocked': True
-        }
+    if response.status_code == 200:
+        data = response.json()
+        if data['results']:
+            # Get the first result
+            result = data['results'][0]
+            return {
+                'TMDB_ID': result['id'],
+                'Title': result['original_title'],
+                'ImageMain': f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2{result['poster_path']}" if result['poster_path'] else '',
+                'Video': None,  # This will be set later
+                'isUnlocked': True
+            }
     return None
 
 # Loop through pages 1 to 50
@@ -41,6 +42,10 @@ for page in range(1, 51):
     
     # Fetch the content of the page
     response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Failed to retrieve page {page}: Status code {response.status_code}")
+        continue
+    
     soup = BeautifulSoup(response.content, 'html.parser')
     
     # Find the main content div
@@ -76,5 +81,8 @@ for page in range(1, 51):
                 movies.append(tmdb_data)
 
 # Print out the list of movies in JSON format
-movies_json = json.dumps({"Movies": movies}, indent=4, ensure_ascii=False)
-print(movies_json)
+try:
+    movies_json = json.dumps({"Movies": movies}, indent=4, ensure_ascii=False)
+    print(movies_json)
+except Exception as e:
+    print(f"Error serializing JSON: {e}")
