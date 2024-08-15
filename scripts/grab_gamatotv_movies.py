@@ -28,6 +28,7 @@ for page in range(1, 11):
     # Slice the string from the start_index to focus only on the main content
     if start_index != -1:
         sliced_content = html_content[start_index:]
+        print(sliced_content)
     else:
         print(f"'<div id=\"content\">' not found in the HTML content for page {page}")
         continue  # Skip to the next page if the content div is not found
