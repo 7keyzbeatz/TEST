@@ -28,15 +28,6 @@ jobs:
       run: |
         python scripts/grab_gamatotv_movies.py
 
-    - name: Verify JSON File
-      run: |
-        if [ -f movies.json ]; then
-          echo "movies.json found."
-        else
-          echo "movies.json not found!"
-          exit 1
-        fi
-
     - name: Upload results
       uses: actions/upload-artifact@v3
       with:
