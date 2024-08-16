@@ -14,68 +14,9 @@ def parse_arguments():
     parser.add_argument('--exclude_keywords', required=False, help='Comma-separated list of keywords or phrases to exclude')
     return parser.parse_args()
 
-# Function to check if HTML contains any of the include keywords and none of the exclude keywords
-def keyword_filter(html, include_keywords, exclude_keywords):
-    if include_keywords:
-        # Include condition: All keywords or phrases in include_keywords must be present (AND logic)
-        if not all(any(keyword.lower() in html.lower() for keyword in keyword_group.split('|')) for keyword_group in include_keywords):
-            print(f"HTML does not contain all required include keywords: {include_keywords}")
-            return False
-    if exclude_keywords:
-        # Exclude condition: If any of the keywords or phrases in exclude_keywords are present (OR logic), return False
-        if any(any(keyword.lower() in html.lower() for keyword in keyword_group.split('|')) for keyword_group in exclude_keywords):
-            print(f"HTML contains excluded keywords: {exclude_keywords}")
-            return False
-    return True
-
-# Function to fetch the HTML content of a URL
-def fetch_html(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.text
-    except requests.RequestException as e:
-        print(f"Error fetching URL {url}: {e}")
-        return None
-
-# Function to grab player URLs
-def grab_player_urls(input_html):
-    if input_html:
-        # Improved regex pattern to ensure valid URL extraction
-        url_pattern = r"http://gmtcloud\.best/\S+(?=\")"
-        return re.findall(url_pattern, input_html)
-    return []
-
-# Function to grab direct URL
-def grab_direct_url(input_html):
-    if input_html:
-        # Check if the HTML contains "coverapi.store"
-        if "coverapi.store" in input_html:
-            return None
-        
-        url_pattern = r"http://gmtcloud\.site/video/movies/[\w%\-\.]+\.mp4\?id=\d+"
-        match = re.search(url_pattern, input_html)
-        if match:
-            return match.group()
-    return None
-
-# Function to grab streaming URL
-def grab_streaming_url(post_id, include_keywords, exclude_keywords):
-    url = f"https://gamatotv.info/{post_id}"
-    html = fetch_html(url)
-    if html:
-        if not keyword_filter(html, include_keywords, exclude_keywords):
-            print(f"Post {post_id} does not match keyword criteria. Skipping.")
-            return None
-
-        player_urls = grab_player_urls(html)
-        for player_url in player_urls:
-            player_html = fetch_html(player_url)
-            if player_html:
-                direct_url = grab_direct_url(player_html)
-                if direct_url and 'mp4' in direct_url:
-                    return direct_url
-    return None
+# Base URL to scrape
+def get_base_url(base_url, page):
+    return f'{base_url}page/{page}/' if page > 1 else base_url
 
 # TMDB API key and base URL
 tmdb_api_key = '753fba9d8bfbd1068ebd0b4437209a8a'
@@ -108,6 +49,64 @@ def search_tmdb(title, year, post_id, direct_url):
         print(f"Found movie: {movie_data['Title']} (ID: {movie_data['TMDB_ID']})")
         return movie_data
     print(f"No results found for title: {title} ({year})")
+    return None
+
+# Function to fetch the HTML content of a URL
+def fetch_html(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        print(f"Error fetching URL {url}: {e}")
+        return None
+
+# Function to grab player URLs
+def grab_player_urls(input_html):
+    if input_html:
+        url_pattern = r"http://gmtcloud\.best/\S+(?=\")"
+        return re.findall(url_pattern, input_html)
+    return []
+
+# Function to grab direct URL
+def grab_direct_url(input_html):
+    if input_html:
+        if "coverapi.store" in input_html:
+            return None
+        url_pattern = r"http://gmtcloud\.site/video/movies/[\w%\-\.]+\.mp4\?id=\d+"
+        match = re.search(url_pattern, input_html)
+        if match:
+            return match.group()
+    return None
+
+# Function to filter by keywords
+def keyword_filter(html, include_keywords, exclude_keywords):
+    if include_keywords:
+        if not all(any(keyword.lower() in html.lower() for keyword in keyword_group.split('|')) for keyword_group in include_keywords):
+            print(f"HTML does not contain all required include keywords: {include_keywords}")
+            return False
+    if exclude_keywords:
+        if any(any(keyword.lower() in html.lower() for keyword in keyword_group.split('|')) for keyword_group in exclude_keywords):
+            print(f"HTML contains excluded keywords: {exclude_keywords}")
+            return False
+    return True
+
+# Function to grab streaming URL
+def grab_streaming_url(post_id, include_keywords, exclude_keywords):
+    url = f"https://gamatotv.info/{post_id}"
+    html = fetch_html(url)
+    if html:
+        if not keyword_filter(html, include_keywords, exclude_keywords):
+            print(f"Post {post_id} does not match keyword criteria. Skipping.")
+            return None
+
+        player_urls = grab_player_urls(html)
+        for player_url in player_urls:
+            player_html = fetch_html(player_url)
+            if player_html:
+                direct_url = grab_direct_url(player_html)
+                if direct_url and 'mp4' in direct_url:
+                    return direct_url
     return None
 
 # Function to save all movies to a single JSON file
