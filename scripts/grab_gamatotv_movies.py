@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import re
 import argparse
+import os
 
 # Function to parse command-line arguments
 def parse_arguments():
@@ -21,9 +22,6 @@ def get_base_url(base_url, page):
 # TMDB API key and base URL
 tmdb_api_key = '753fba9d8bfbd1068ebd0b4437209a8a'
 tmdb_base_url = 'https://api.themoviedb.org/3/search/movie'
-
-# Initialize a list to store movie data
-movies = []
 
 # Function to search TMDB for a movie and return the first result
 def search_tmdb(title, year, post_id, direct_url):
@@ -109,13 +107,38 @@ def grab_streaming_url(post_id, include_keywords, exclude_keywords):
                     return direct_url
     return None
 
+# Function to load existing movies from the JSON file
+def load_existing_movies(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()  # Read as string for easy checking
+    return '{}'
+
+# Function to check if a movie with the given TMDB ID already exists in the JSON file
+def movie_exists(tmdb_id, json_str):
+    try:
+        data = json.loads(json_str)
+        return any(movie.get('TMDB_ID') == tmdb_id for movie in data.get("Movies", []))
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        return False
+
 # Function to save all movies to a single JSON file
-def save_to_file(movies):
-    file_path = 'movies.json'
+def save_to_file(movies, file_path):
+    data = {
+        "Main": [
+            {
+                "Live": True,
+                "Video": "",
+                "Fetch": "MediaFire"
+            }
+        ],
+        "Movies": movies
+    }
     print(f"Attempting to save movies to {file_path}")
     try:
         with open(file_path, 'w', encoding='utf-8') as file:
-            json.dump({"Movies": movies}, file, indent=4, ensure_ascii=False)
+            json.dump(data, file, indent=4, ensure_ascii=False)
         print(f'Successfully saved all movies to {file_path}')
     except IOError as e:
         print(f"Error saving movies to file: {e}")
@@ -128,6 +151,11 @@ def main():
     end_page = args.end_page
     include_keywords = args.include_keywords.split(',') if args.include_keywords else []
     exclude_keywords = args.exclude_keywords.split(',') if args.exclude_keywords else []
+
+    file_path = 'data/movies.json'
+    existing_json_str = load_existing_movies(file_path)
+
+    new_movies = []
 
     try:
         for page in range(start_page, end_page + 1):
@@ -155,14 +183,19 @@ def main():
                         print(f"Valid MP4 URL found: {direct_url}")
                         tmdb_data = search_tmdb(title, year, post_id, direct_url)
                         if tmdb_data:
-                            tmdb_data['DirectVideo'] = direct_url
-                            movies.append(tmdb_data)
+                            if not movie_exists(tmdb_data['TMDB_ID'], existing_json_str):
+                                tmdb_data['DirectVideo'] = direct_url
+                                new_movies.append(tmdb_data)
+                            else:
+                                print(f"Movie with TMDB ID {tmdb_data['TMDB_ID']} already exists. Skipping.")
                     else:
                         print(f"No valid MP4 URL found for post ID: {post_id}")
-        if movies:
-            save_to_file(movies)
+        if new_movies:
+            existing_movies = json.loads(existing_json_str).get("Movies", [])
+            existing_movies.extend(new_movies)
+            save_to_file(existing_movies, file_path)
         else:
-            print("No movies were found or saved.")
+            print("No new movies were found or saved.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
