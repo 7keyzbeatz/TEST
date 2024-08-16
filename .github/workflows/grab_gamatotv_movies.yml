@@ -18,9 +18,13 @@ on:
       include_keywords:
         description: 'Comma-separated list of keywords or phrases to include'
         required: false
+        default: ''
+        type: string  # Ensure this is treated as string
       exclude_keywords:
         description: 'Comma-separated list of keywords or phrases to exclude'
         required: false
+        default: 'Κινούμενα Σχέδια, Μεταγλωτισμένα'
+        type: string  # Ensure this is treated as string
 
 jobs:
   scrape:
