@@ -10,13 +10,23 @@ on:
       start_page:
         description: 'Start page number'
         required: true
-        default: 1
-        type: number
+        default: '1'  # Changed from number to string
+        type: string  # Changed from number to string
       end_page:
         description: 'End page number'
         required: true
-        default: 10
-        type: number
+        default: '10'  # Changed from number to string
+        type: string  # Changed from number to string
+      include_keywords:
+        description: 'Comma-separated list of keywords or phrases to include'
+        required: false
+        default: ''
+        type: string  # Ensure this is treated as string
+      exclude_keywords:
+        description: 'Comma-separated list of keywords or phrases to exclude'
+        required: false
+        default: 'Κινούμενα Σχέδια, Μεταγλωτισμένα'
+        type: string  # Ensure this is treated as string
 
 jobs:
   scrape:
@@ -41,7 +51,9 @@ jobs:
         python scripts/grab_gamatotv_movies.py \
           --base_url "${{ github.event.inputs.base_url }}" \
           --start_page "${{ github.event.inputs.start_page }}" \
-          --end_page "${{ github.event.inputs.end_page }}"
+          --end_page "${{ github.event.inputs.end_page }}" \
+          --include_keywords "${{ github.event.inputs.include_keywords }}" \
+          --exclude_keywords "${{ github.event.inputs.exclude_keywords }}"
 
     - name: Upload results
       uses: actions/upload-artifact@v3
