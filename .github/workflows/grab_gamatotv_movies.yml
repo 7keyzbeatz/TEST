@@ -10,23 +10,17 @@ on:
       start_page:
         description: 'Start page number'
         required: true
-        default: '1'  # Changed from number to string
-        type: string  # Changed from number to string
+        default: '1'
       end_page:
         description: 'End page number'
         required: true
-        default: '10'  # Changed from number to string
-        type: string  # Changed from number to string
+        default: '10'
       include_keywords:
         description: 'Comma-separated list of keywords or phrases to include'
         required: false
-        default: ''
-        type: string  # Ensure this is treated as string
       exclude_keywords:
         description: 'Comma-separated list of keywords or phrases to exclude'
         required: false
-        default: 'Κινούμενα Σχέδια, Μεταγλωτισμένα'
-        type: string  # Ensure this is treated as string
 
 jobs:
   scrape:
@@ -59,4 +53,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: movie-data
-        path: movies.json
+        path: data/movies.json
+        if-no-files-found: warn
