@@ -30,7 +30,7 @@ jobs:
       env:
         MAX_MOVIES: ${{ github.event.inputs.max-movies }}  # Pass the max-movies input to the script
       run: |
-        python process_movies.py $MAX_MOVIES
+        python scripts/process_movies.py $MAX_MOVIES
 
     - name: Upload updated movies JSON
       uses: actions/upload-artifact@v3
