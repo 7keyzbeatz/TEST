@@ -82,8 +82,8 @@ folder_id = 50460  # Replace with the actual folder ID
 batch_size = 25  # Process 25 movies at a time
 
 # Define the range of movies to process (0-based index)
-start_index = 0  # Start from the 1st movie
-end_index = 100  # Up to the 100th movie
+start_index = 100  # Start from the 1st movie
+end_index = 200  # Up to the 100th movie
 
 if movies_json:
     # Extract movies and process them in batches
