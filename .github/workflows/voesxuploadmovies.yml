@@ -25,7 +25,7 @@ jobs:
 
     - name: Run Movie Upload Script        
       run: |
-        python process_movies.py
+        python voesxuploadmovies.py
 
     - name: Upload updated movies JSON
       uses: actions/upload-artifact@v3
