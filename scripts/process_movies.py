@@ -2,7 +2,6 @@ import requests
 import json
 import time
 import os
-import sys
 
 def upload_to_voe(api_key, video_url, folder_id):
     api_url = f'https://voe.sx/api/upload/url?key={api_key}&url={video_url}&folder_id={folder_id}'
@@ -71,7 +70,7 @@ def process_movies_in_batches(movies, max_movies, batch_size, api_key, folder_id
 
     print("All movies processed.")
 
-# Load movies JSON from the local repository
+# Load movies JSON from the data directory
 with open('data/movies.json', 'r') as f:
     movies_json = json.load(f)
 
@@ -82,7 +81,7 @@ batch_size = 25  # Process 25 movies at a time
 max_movies = int(os.getenv('MAX_MOVIES', '25'))  # Convert the string input to an integer
 
 if movies_json:
-    # Process movies in batches
+    # Extract movies and process them in batches
     process_movies_in_batches(movies_json.get("Movies", []), max_movies, batch_size, api_key, folder_id)
 
     # Save the updated JSON to a local file
