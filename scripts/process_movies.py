@@ -44,6 +44,11 @@ def process_movies_in_batches(movies, start_index, end_index, batch_size, api_ke
             movie_id = movie.get("TMDB_ID", "Unknown")
             movie_title = movie.get("Title", "Unknown Title")
             direct_video_url = movie.get("DirectVideo")
+            voe_id = movie.get("VOE_ID")
+
+            if voe_id:
+                print(f"Skipping movie ID: {movie_id}, Title: {movie_title} - Already has VOE_ID: {voe_id}")
+                continue
 
             if direct_video_url:
                 print(f"\nProcessing movie ID: {movie_id}, Title: {movie_title}")
@@ -82,8 +87,8 @@ folder_id = 50460  # Replace with the actual folder ID
 batch_size = 25  # Process 25 movies at a time
 
 # Define the range of movies to process (0-based index)
-start_index = 100  # Start from the 1st movie
-end_index = 200  # Up to the 100th movie
+start_index = 100  # Start from the 100th movie (index 99)
+end_index = 600  # Up to the 200th movie (index 199)
 
 if movies_json:
     # Extract movies and process them in batches
