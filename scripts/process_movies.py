@@ -27,20 +27,18 @@ def check_uploads(api_key):
         print(f"Failed to fetch upload list: {response.status_code}, {response.text}")
         return []
 
-def process_movies_in_batches(movies, batch_size, api_key, folder_id):
-    # Hard-code the number of movies to process
-    max_movies = 2
-    total_movies = min(len(movies), max_movies)
-    i = 0
+def process_movies_in_batches(movies, start_index, end_index, batch_size, api_key, folder_id):
+    total_movies = min(len(movies), end_index) - start_index
+    i = start_index
 
     while i < total_movies:
         print(f"\nChecking ongoing uploads...")
         while len(check_uploads(api_key)) >= 25:
             print(f"Ongoing uploads detected. Waiting before retrying...")
-            time.sleep(30)  # Wait 30 seconds before checking again
+            time.sleep(10)  # Wait 10 seconds before checking again
 
         batch = movies[i:i + batch_size]
-        print(f"\nProcessing batch {i // batch_size + 1} of {total_movies // batch_size + 1}...")
+        print(f"\nProcessing batch {i // batch_size + 1} of {(total_movies // batch_size) + 1}...")
 
         for movie in batch:
             movie_id = movie.get("TMDB_ID", "Unknown")
@@ -62,8 +60,8 @@ def process_movies_in_batches(movies, batch_size, api_key, folder_id):
         # Wait for current batch uploads to complete
         print(f"Waiting for uploads to complete before processing the next batch...")
         while len(check_uploads(api_key)) > 0:
-            print(f"Uploads still ongoing. Checking again in 30 seconds...")
-            time.sleep(30)  # Wait 30 seconds before checking again
+            print(f"Uploads still ongoing. Checking again in 10 seconds...")
+            time.sleep(10)  # Wait 10 seconds before checking again
 
         # Optionally pause between batches
         print(f"Waiting before processing the next batch...")
@@ -75,14 +73,18 @@ def process_movies_in_batches(movies, batch_size, api_key, folder_id):
 with open('data/movies.json', 'r') as f:
     movies_json = json.load(f)
 
-# Get API key from environment variables
+# Get API key and folder ID from environment variables or hardcode them
 api_key = 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI'  # Replace with your API key
 folder_id = 50460  # Replace with the actual folder ID
 batch_size = 25  # Process 25 movies at a time
 
+# Define the range of movies to process (1-based index)
+start_index = 0  # 1st movie (0-based index)
+end_index = 100  # 100th movie (0-based index)
+
 if movies_json:
     # Extract movies and process them in batches
-    process_movies_in_batches(movies_json.get("Movies", []), batch_size, api_key, folder_id)
+    process_movies_in_batches(movies_json.get("Movies", []), start_index, end_index, batch_size, api_key, folder_id)
 
     # Save the updated JSON to a local file
     with open('updated_movies.json', 'w') as f:
