@@ -53,7 +53,10 @@ def process_movies_in_batches(movies, start_index, end_index, batch_size, api_ke
                     print(f"Added VOE_ID {file_code} to movie {movie['Title']}")
                 else:
                     print(f"Could not add VOE_ID to movie {movie['Title']}")
-                time.sleep(1)  # To avoid hitting rate limits
+            else:
+                print(f"Skipping movie ID: {movie_id}, Title: {movie_title} - No DirectVideo URL found.")
+
+            time.sleep(10)  # To avoid hitting rate limits
 
         i += batch_size  # Move to the next batch
 
@@ -73,14 +76,14 @@ def process_movies_in_batches(movies, start_index, end_index, batch_size, api_ke
 with open('data/movies.json', 'r') as f:
     movies_json = json.load(f)
 
-# Get API key and folder ID from environment variables or hardcode them
-api_key = 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI'  # Replace with your API key
+# Set the API key directly
+api_key = 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI'
 folder_id = 50460  # Replace with the actual folder ID
 batch_size = 25  # Process 25 movies at a time
 
-# Define the range of movies to process (1-based index)
-start_index = 0  # 1st movie (0-based index)
-end_index = 100  # 100th movie (0-based index)
+# Define the range of movies to process (0-based index)
+start_index = 0  # Start from the 1st movie
+end_index = 100  # Up to the 100th movie
 
 if movies_json:
     # Extract movies and process them in batches
