@@ -75,7 +75,7 @@ def process_movies_in_batches(movies, batch_size, api_key, folder_id):
     print("All movies processed.")
 
 # Load movies JSON from the local repository
-with open('movies.json', 'r') as f:
+with open('data/movies.json', 'r') as f:
     movies_json = json.load(f)
 
 # Your API key and folder ID
