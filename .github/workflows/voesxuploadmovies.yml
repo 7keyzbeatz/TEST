@@ -1,0 +1,34 @@
+name: Process Movies
+
+on:
+  push:
+    branches:
+      - main  # Adjust this if you want to trigger on a different branch
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'  # Specify the version of Python to use
+
+    - name: Install Dependencies
+      run: |
+        pip install requests
+
+    - name: Run Movie Upload Script        
+      run: |
+        python process_movies.py
+
+    - name: Upload updated movies JSON
+      uses: actions/upload-artifact@v3
+      with:
+        name: updated-movies
+        path: updated_movies.json
