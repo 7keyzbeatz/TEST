@@ -1,10 +1,13 @@
 name: Process Movies
 
 on:
-  push:
-    branches:
-      - main  # Adjust this if you want to trigger on a different branch
   workflow_dispatch:
+    inputs:
+      max-movies:
+        description: 'Maximum number of movies to upload to voe.sx'
+        required: true
+        default: "25"  # Default value as a string
+        type: string  # Type set to string
 
 jobs:
   upload:
@@ -23,9 +26,11 @@ jobs:
       run: |
         pip install requests
 
-    - name: Run Movie Upload Script        
+    - name: Run Movie Upload Script
+      env:
+        MAX_MOVIES: ${{ github.event.inputs.max-movies }}  # Pass the max-movies input to the script
       run: |
-        python voesxuploadmovies.py
+        python process_movies.py $MAX_MOVIES
 
     - name: Upload updated movies JSON
       uses: actions/upload-artifact@v3
