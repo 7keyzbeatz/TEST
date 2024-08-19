@@ -9,18 +9,18 @@ jobs:
 
     steps:
     - name: Download "The Last Rifleman (2023)"
-      run: curl -L -o "The Last Rifleman (2023).mp4" "https://www.sw.vidce.net/d/sMFqoBXbZJpuEuOu1ctOsg/1724673881/video/2015/tt12404266.mp4"
+      run: curl -k -L -o "The Last Rifleman (2023).mp4" "https://www.sw.vidce.net/d/sMFqoBXbZJpuEuOu1ctOsg/1724673881/video/2015/tt12404266.mp4"
 
     - name: Download "All Your Faces (2023)"
-      run: curl -L -o "All Your Faces (2023).mp4" "https://www.sw.vidce.net/d/d87ujcrYfPFUimbV27778w/1724673986/video/2015/tt24070754.mp4"
+      run: curl -k -L -o "All Your Faces (2023).mp4" "https://www.sw.vidce.net/d/d87ujcrYfPFUimbV27778w/1724673986/video/2015/tt24070754.mp4"
 
     - name: Download "Tel Aviv/Beirut (2023)"
-      run: curl -L -o "Tel Aviv Beirut (2023).mp4" "https://www.sw.vidce.net/d/MMRcvVqodyjmDS4SQP8rOQ/1724674641/video/2015/tt16420168.mp4"
+      run: curl -k -L -o "Tel Aviv Beirut (2023).mp4" "https://www.sw.vidce.net/d/MMRcvVqodyjmDS4SQP8rOQ/1724674641/video/2015/tt16420168.mp4"
 
     - name: Install lftp
       run: sudo apt-get install lftp
 
-    - name: Upload Videos to FTP Server 1
+    - name: Upload Videos to FTP Server
       env:
         FTP_HOST: ${{ secrets.FTP_HOST_1 }}
         FTP_USER: ${{ secrets.FTP_USER }}
