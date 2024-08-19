@@ -19,9 +19,9 @@ jobs:
 
     - name: Upload Videos to FTP Server
       env:
-        FTP_HOST: ${{ secrets.FTP_HOST }}
-        FTP_USER: ${{ secrets.FTP_USER }}
-        FTP_PASS: ${{ secrets.FTP_PASS }}
+        FTP_HOST: 'ftp1.voe-network.net'  # Replace with your actual FTP host
+        FTP_USER: '7keyzbeatz'            # Replace with your actual FTP username
+        FTP_PASS: '3mnyf7mrexvzdh'       # Replace with your actual FTP password
       run: |
         lftp -d -e "
         open -u $FTP_USER,$FTP_PASS $FTP_HOST;
