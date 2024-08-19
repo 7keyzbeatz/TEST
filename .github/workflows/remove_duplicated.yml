@@ -1,6 +1,9 @@
 name: Remove Duplicate Movies
 
 on:
+  push:
+    paths:
+      - 'data/moviesforremoval.json'
   workflow_dispatch:
 
 jobs:
@@ -10,6 +13,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    - name: List files for debugging
+      run: ls -R
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -24,9 +30,9 @@ jobs:
 
     - name: Commit changes if any
       run: |
-        git config --global user.email "medialtdcontact@gmail.com"
-        git config --global user.name "med1altd"
-        git add movies.json
+        git config --global user.email "you@example.com"
+        git config --global user.name "GitHub Action"
+        git add data/moviesforremoval.json
         git diff --quiet || git commit -m "Removed duplicate movies based on Title and DirectVideo"
         git push || echo "No changes to commit"
 
@@ -34,4 +40,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: cleaned-movies-json
-        path: movies.json
+        path: data/moviesforremoval.json
