@@ -26,10 +26,8 @@ jobs:
         lftp -d -e "
         open -u $FTP_USER,$FTP_PASS $FTP_HOST;
         put 'The Last Rifleman (2023).mp4';
-        put 'All Your Faces (2023).mp4';
-        put 'Tel Aviv Beirut (2023).mp4';
         bye
         " -u $FTP_USER,$FTP_PASS $FTP_HOST
 
     - name: Clean up
-      run: rm "The Last Rifleman (2023).mp4" "All Your Faces (2023).mp4" "Tel Aviv Beirut (2023).mp4"
+      run: rm "The Last Rifleman (2023).mp4"
