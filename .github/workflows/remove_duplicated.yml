@@ -20,7 +20,7 @@ jobs:
       run: pip install --upgrade pip
 
     - name: Run the remove duplicates script
-      run: python scripts/moviesforremoval.py
+      run: python scripts/remove_duplicated.py
 
     - name: Commit changes if any
       run: |
