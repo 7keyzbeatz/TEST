@@ -9,30 +9,27 @@ jobs:
 
     steps:
     - name: Download "The Last Rifleman (2023)"
-      run: curl -k -L -o "The Last Rifleman (2023).mp4" "https://www.sw.vidce.net/d/sMFqoBXbZJpuEuOu1ctOsg/1724673881/video/2015/tt12404266.mp4"
-
-    - name: Download "All Your Faces (2023)"
-      run: curl -k -L -o "All Your Faces (2023).mp4" "https://www.sw.vidce.net/d/d87ujcrYfPFUimbV27778w/1724673986/video/2015/tt24070754.mp4"
-
-    - name: Download "Tel Aviv/Beirut (2023)"
-      run: curl -k -L -o "Tel Aviv Beirut (2023).mp4" "https://www.sw.vidce.net/d/MMRcvVqodyjmDS4SQP8rOQ/1724674641/video/2015/tt16420168.mp4"
+      run: curl -k -L -o "The Last Rifleman (2023).mp4" "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
     - name: Install lftp
-      run: sudo apt-get install lftp
+      run: sudo apt-get install -y lftp
+
+    - name: List Downloaded Files
+      run: ls -l
 
     - name: Upload Videos to FTP Server
       env:
-        FTP_HOST: ${{ secrets.FTP_HOST_1 }}
+        FTP_HOST: ${{ secrets.FTP_HOST }}
         FTP_USER: ${{ secrets.FTP_USER }}
         FTP_PASS: ${{ secrets.FTP_PASS }}
       run: |
-        lftp -e "
+        lftp -d -e "
         open -u $FTP_USER,$FTP_PASS $FTP_HOST;
         put 'The Last Rifleman (2023).mp4';
         put 'All Your Faces (2023).mp4';
         put 'Tel Aviv Beirut (2023).mp4';
         bye
-        "
+        " -u $FTP_USER,$FTP_PASS $FTP_HOST
 
     - name: Clean up
       run: rm "The Last Rifleman (2023).mp4" "All Your Faces (2023).mp4" "Tel Aviv Beirut (2023).mp4"
