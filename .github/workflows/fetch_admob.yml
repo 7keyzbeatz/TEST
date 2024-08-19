@@ -2,8 +2,6 @@ name: Fetch AdMob Data
 
 on:
   workflow_dispatch:  # Allows manual trigger
-  schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight (UTC)
 
 jobs:
   fetch-admob-data:
