@@ -9,7 +9,14 @@ def remove_duplicates(input_file):
     final_movies = []
 
     for movie in movies:
-        identifier = (movie["Title"], movie["DirectVideo"])
+        title = movie.get("Title")
+        direct_video = movie.get("DirectVideo")
+
+        if not title or not direct_video:
+            # Skip movies that don't have both a Title and DirectVideo
+            continue
+
+        identifier = (title, direct_video)
         voe_id = movie.get("VOE_ID")
         
         if identifier in unique_movies:
