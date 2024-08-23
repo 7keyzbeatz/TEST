@@ -15,32 +15,39 @@ def get_episode_urls(domain, base_url, query_string, page):
     else:
         url = f"{domain}{base_url}page/{page}/?{query_string}"
     
-    print(f"Fetching URL: {url}")
+    logging.info(f"Fetching URL: {url}")
     
-    # Make the HTTP request
-    response = requests.get(url)
-    print(f"Response status code: {response.status_code}")
-    
-    # Print the first 5000 characters of the HTML for debugging
-    print(response.text[:5000])
-    
-    # Parse the HTML
-    soup = BeautifulSoup(response.content, 'html.parser')
-    
-    episode_urls = []
-    
-    # Use a CSS selector to find episode links
-    for link in soup.select('.prel.relative-post.blocked a'):
-        href = link.get('href')
-        if href and href.startswith('/tvshows/'):
-            episode_urls.append('https://www.megatv.com' + href)
-    
-    return episode_urls
+    try:
+        # Make the HTTP request
+        response = requests.get(url)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        logging.info(f"Response status code: {response.status_code}")
+
+        # Parse the HTML
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Debug output of the first 5000 characters of the HTML
+        logging.debug(f"HTML content preview: {response.text[:5000]}")
+        
+        episode_urls = []
+        
+        # Use a CSS selector to find episode links
+        for link in soup.select('.prel.relative-post.blocked a'):
+            href = link.get('href')
+            if href and href.startswith('/tvshows/'):
+                episode_urls.append('https://www.megatv.com' + href)
+        
+        logging.info(f"Found episode URLs: {episode_urls}")
+        return episode_urls
+    except Exception as e:
+        logging.error(f"Error fetching episode URLs: {e}")
+        return []
 
 def scrape_episode_data(episode_url):
     """Scrapes data from an episode page and logs detailed info."""
     try:
         response = requests.get(episode_url)
+        response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
         # Extract the title
@@ -69,7 +76,7 @@ def scrape_episode_data(episode_url):
             # Get all <p> tags and concatenate their text
             paragraphs = description_div.find_all("p")
             description = ' '.join(p.get_text(strip=True) for p in paragraphs)
-        
+
         logging.info(f"Successfully scraped episode data from {episode_url}. Title: {title}, Date: {date}, Video URL: {video_url}, Description: {description}")
 
         return {
@@ -112,7 +119,6 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
 
     for page in range(int(from_page), int(to_page) + 1):
         episode_urls = get_episode_urls(domain, base_url, query_string, page)
-        print(f"Found episode URLs on page {page}: {episode_urls}")
         for url in episode_urls:
             episode_data = scrape_episode_data(url)
             season["Episodes"].append(episode_data)
