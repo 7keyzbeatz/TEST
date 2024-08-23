@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+import html
 
 def get_episode_urls(domain, base_url, query_string, page):
     # Construct the URL
@@ -53,9 +54,11 @@ def scrape_episode_data(episode_url):
         description_parts = []
         for p in description_div.find_all("p"):
             # Collect all <p> tags and filter out non-description parts
-            if not p.find("strong"):
-                description_parts.append(p.get_text(strip=True))
+            text = p.get_text(strip=True)
+            if text and not p.find("strong"):
+                description_parts.append(text)
         description = ' '.join(description_parts)
+        description = html.unescape(description)  # Decode HTML entities
     else:
         description = "Description Not Found"
 
