@@ -39,11 +39,21 @@ def scrape_episode_data(episode_url):
 
     # Extract title
     title_tag = soup.find("meta", property="og:title")
-    title = title_tag["content"].strip() if title_tag else "Title Not Found"
+    if title_tag:
+        title = title_tag["content"].strip()
+        # Clean title to format: Επεισόδιο 1
+        title = re.sub(r'\s*\|\s*MEGA TV$', '', title)  # Remove the "| MEGA TV" part
+        title = re.sub(r'Επεισόδιο:\s*', 'Επεισόδιο ', title)  # Replace "Επεισόδιο:" with "Επεισόδιο "
+    else:
+        title = "Title Not Found"
 
     # Extract description
     description_div = soup.find("div", id="EpisodeSum")
-    description = description_div.get_text(strip=True) if description_div else "Description Not Found"
+    if description_div:
+        # Extract only the first <p> tag text
+        description = description_div.find("p").get_text(strip=True)
+    else:
+        description = "Description Not Found"
 
     # Extract image URL
     image_tag = soup.find("meta", property="og:image")
@@ -69,8 +79,8 @@ def scrape_episode_data(episode_url):
         duration = duration_match.group()
 
     return {
-        "Title": title,
-        "Image": image_url,
+        "Title": title if title else "Title Not Found",
+        "Image": image_url if image_url else "Image Not Found",
         "Video": video_url if video_url else "Video Not Found",
         "Description": description if description else "Description Not Found",
         "Date": date if date else "Date Not Found",
