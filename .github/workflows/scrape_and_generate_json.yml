@@ -63,4 +63,11 @@ jobs:
                                    --to-page "${{ github.event.inputs.to_page }}"
 
       - name: Display result
-        run: cat series.json
+        run: |
+          cat series.json
+
+      - name: Upload JSON file
+        uses: actions/upload-artifact@v3
+        with:
+          name: series-json
+          path: series.json
