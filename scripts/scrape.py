@@ -9,7 +9,7 @@ def get_episode_urls(domain, base_url, query_string, page):
     if page == 1:
         url = f"{domain}{base_url}?{query_string}"
     else:
-        url = f"{domain}{base_url}page/{page}/?{query_string}"
+        url = f"{domain}{base_url}page/{page}/{query_string}"
     
     print(f"Fetching URL: {url}")
     
