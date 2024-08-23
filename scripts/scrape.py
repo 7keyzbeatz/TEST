@@ -9,7 +9,7 @@ def get_episode_urls(domain, base_url, query_string, page):
     if page == 1:
         url = f"{domain}{base_url}?{query_string}"
     else:
-        url = f"{domain}{base_url}page/{page}/{query_string}"
+        url = f"{domain}{base_url}page/{page}/?{query_string}"
     
     print(f"Fetching URL: {url}")
     
@@ -26,7 +26,7 @@ def get_episode_urls(domain, base_url, query_string, page):
     print(response.text[:5000])
     
     # Define the regex pattern for episode URLs
-    pattern = r'https:\/\/www\.megatv\.com\/tvshows\/\d+\/epeisodio-\d+-\d+\/'
+    pattern = r'https:\/\/www\.meg atv\.com\/tvshows\/\d+\/epeisodio-\d+-\d+\/'
     
     # Find all matches in the HTML content
     episode_urls = re.findall(pattern, response.text)
@@ -37,27 +37,36 @@ def scrape_episode_data(episode_url):
     response = requests.get(episode_url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
+    # Extract data
     title = soup.find("meta", property="og:title")["content"].strip()
     description = soup.find("meta", property="og:description")["content"].strip()
     image_url = soup.find("meta", property="og:image")["content"].strip()
     canonical_url = soup.find("link", rel="canonical")["href"]
 
+    # Extract video URL
     video_url = ""
     video_div = soup.find("div", {"id": "container_embed"})
     if video_div:
         video_url = video_div.get("data-kwik_source", "").strip()
 
+    # Extract duration (if available in the description)
     duration = ""
     duration_match = re.search(r'\b(\d+[:]\d+)\b', description)
     if duration_match:
         duration = duration_match.group()
+
+    # Extract date from the canonical URL or other sources (adapt this as needed)
+    date = ""
+    date_match = re.search(r'\d{4}-\d{2}-\d{2}', canonical_url)
+    if date_match:
+        date = date_match.group()
 
     return {
         "Title": title,
         "Image": image_url,
         "Video": video_url,
         "Description": description,
-        "Date": "",
+        "Date": date,
         "Duration": duration,
         "isUnlocked": True,
         "fetchVideo": False,
