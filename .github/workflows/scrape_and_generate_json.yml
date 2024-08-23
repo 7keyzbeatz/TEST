@@ -3,6 +3,11 @@ name: Fetch Mega TV Episodes
 on:
   workflow_dispatch:
     inputs:
+      domain:
+        description: 'Base domain URL (e.g., https://www.megatv.com)'
+        required: true
+        type: string
+        default: 'https://www.megatv.com'
       base_url:
         description: 'Base URL to scrape episodes from, without query string'
         required: true
@@ -43,6 +48,7 @@ jobs:
 
       - name: Debug inputs
         run: |
+          echo "Domain: ${{ github.event.inputs.domain }}"
           echo "Base URL: ${{ github.event.inputs.base_url }}"
           echo "Query String: ${{ github.event.inputs.query_string }}"
           echo "From Page: ${{ github.event.inputs.from_page }}"
@@ -50,7 +56,8 @@ jobs:
 
       - name: Run scraper
         run: |
-          python scripts/scrape.py --base-url "${{ github.event.inputs.base_url }}" \
+          python scripts/scrape.py --domain "${{ github.event.inputs.domain }}" \
+                                   --base-url "${{ github.event.inputs.base_url }}" \
                                    --query-string "${{ github.event.inputs.query_string }}" \
                                    --from-page "${{ github.event.inputs.from_page }}" \
                                    --to-page "${{ github.event.inputs.to_page }}"
