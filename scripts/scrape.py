@@ -38,28 +38,29 @@ def scrape_episode_data(episode_url):
     soup = BeautifulSoup(response.content, 'html.parser')
 
     # Extract title
-    title = soup.find("meta", property="og:title")
-    title = title["content"].strip() if title else "Title Not Found"
+    title_tag = soup.find("meta", property="og:title")
+    title = title_tag["content"].strip() if title_tag else "Title Not Found"
 
     # Extract description
-    description = soup.find("div", id="EpisodeSum")
-    description = description.get_text(strip=True) if description else "Description Not Found"
+    description_div = soup.find("div", id="EpisodeSum")
+    description = description_div.get_text(strip=True) if description_div else "Description Not Found"
 
     # Extract image URL
-    image_url = soup.find("meta", property="og:image")
-    image_url = image_url["content"].strip() if image_url else "Image Not Found"
+    image_tag = soup.find("meta", property="og:image")
+    image_url = image_tag["content"].strip() if image_tag else "Image Not Found"
 
-    # Extract video URL
+    # Extract video URL using regex on entire HTML content
     video_url = ""
     video_div = soup.find("div", {"id": "container_embed"})
     if video_div:
-        video_url = video_div.get("data-kwik_source", "").strip()
+        html_content = str(video_div)  # Convert div content to string
+        m3u8_match = re.search(r'https://[^\s]+\.m3u8', html_content)
+        if m3u8_match:
+            video_url = m3u8_match.group().strip()
 
     # Extract date
-    date = ""
     date_span = soup.find("span", id="currentdate")
-    if date_span:
-        date = date_span.get_text(strip=True).split()[0]  # Get the date part (YYYY-MM-DD)
+    date = date_span.get_text(strip=True).split()[0] if date_span else "Date Not Found"
 
     # Extract duration (if available in description)
     duration = ""
@@ -70,7 +71,7 @@ def scrape_episode_data(episode_url):
     return {
         "Title": title,
         "Image": image_url,
-        "Video": video_url,
+        "Video": video_url if video_url else "Video Not Found",
         "Description": description if description else "Description Not Found",
         "Date": date if date else "Date Not Found",
         "Duration": duration if duration else "Duration Not Found",
