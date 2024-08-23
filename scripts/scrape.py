@@ -1,33 +1,30 @@
 import argparse
 import requests
 from bs4 import BeautifulSoup
-import json
-import re
 
 def get_episode_urls(domain, base_url, query_string, page):
-    # Construct the URL correctly with the pagination
+    # Construct the URL
     url = f"{domain}{base_url}{query_string}" if page == 1 else f"{domain}{base_url}page/{page}/{query_string}"
     
-    # Debug: Print the constructed URL
     print(f"Fetching URL: {url}")
     
+    # Make the HTTP request
     response = requests.get(url)
-    
-    # Debug: Print the HTTP response code
     print(f"Response status code: {response.status_code}")
     
+    # Print the first 500 characters of the HTML for debugging
+    print(response.text[:500])
+    
+    # Parse the HTML
     soup = BeautifulSoup(response.content, 'html.parser')
     
     episode_urls = []
     
-    # Updated selector based on the provided HTML structure
-    for link in soup.select('.columns.is-multiline .prel.relative-post.blocked a'):
+    # Use a CSS selector to find episode links
+    for link in soup.select('.prel.relative-post.blocked a'):
         href = link.get('href')
         if href and href.startswith('/tvshows/'):
-            episode_urls.append(href)  # Already a full URL
-    
-    # Debug: Print the found episode URLs
-    print(f"Found episode URLs: {episode_urls}")
+            episode_urls.append('https://www.megatv.com' + href)
     
     return episode_urls
 
@@ -41,7 +38,7 @@ def scrape_episode_data(episode_url):
     canonical_url = soup.find("link", rel="canonical")["href"]
 
     video_url = ""
-    video_div = soup.find("div", {"id": "player_div_id"})
+    video_div = soup.find("div", {"id": "container_embed"})
     if video_div:
         video_url = video_div.get("data-kwik_source", "").strip()
 
@@ -49,14 +46,6 @@ def scrape_episode_data(episode_url):
     duration_match = re.search(r'\b(\d+[:]\d+)\b', description)
     if duration_match:
         duration = duration_match.group()
-
-    # Log episode details
-    print(f"Title: {title}")
-    print(f"Image URL: {image_url}")
-    print(f"Video URL: {video_url}")
-    print(f"Description: {description}")
-    print(f"Duration: {duration}")
-    print("="*40)  # Separator line for readability
 
     return {
         "Title": title,
@@ -83,6 +72,7 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
 
     for page in range(int(from_page), int(to_page) + 1):
         episode_urls = get_episode_urls(domain, base_url, query_string, page)
+        print(f"Found episode URLs on page {page}: {episode_urls}")
         for url in episode_urls:
             episode_data = scrape_episode_data(url)
             season["Episodes"].append(episode_data)
@@ -103,9 +93,8 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrape Mega TV episodes.')
-    parser.add_argument('--domain', type=str, required=True, help='Domain URL (e.g., https://www.megatv.com)')
-    parser.add_argument('--base-url', type=str, required=True, help='Base URL to scrape episodes from (e.g., /episodes/)')
-    parser.add_argument('--query-string', type=str, required=True, help='Query string to append (e.g., ?id=S102&type=tvshows)')
+    parser.add_argument('--base-url', type=str, required=True, help='Base URL to scrape episodes from')
+    parser.add_argument('--query-string', type=str, required=True, help='Query string to append to the base URL')
     parser.add_argument('--from-page', type=str, required=True, help='Starting page number')
     parser.add_argument('--to-page', type=str, required=True, help='Ending page number')
     
