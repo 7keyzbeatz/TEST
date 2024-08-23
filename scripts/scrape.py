@@ -42,8 +42,8 @@ def scrape_episode_data(episode_url):
     title = title["content"].strip() if title else "Title Not Found"
 
     # Extract description
-    description = soup.find("meta", property="og:description")
-    description = description["content"].strip() if description else "Description Not Found"
+    description = soup.find("div", id="EpisodeSum")
+    description = description.get_text(strip=True) if description else "Description Not Found"
 
     # Extract image URL
     image_url = soup.find("meta", property="og:image")
@@ -55,19 +55,17 @@ def scrape_episode_data(episode_url):
     if video_div:
         video_url = video_div.get("data-kwik_source", "").strip()
 
-    # Extract date and duration (if available in description)
+    # Extract date
     date = ""
-    duration = ""
-    description_text = description
+    date_span = soup.find("span", id="currentdate")
+    if date_span:
+        date = date_span.get_text(strip=True).split()[0]  # Get the date part (YYYY-MM-DD)
 
-    duration_match = re.search(r'\b(\d+[:]\d+)\b', description_text)
+    # Extract duration (if available in description)
+    duration = ""
+    duration_match = re.search(r'\b(\d+[:]\d+)\b', description)
     if duration_match:
         duration = duration_match.group()
-
-    # Date extraction could be improved based on actual format on the page
-    date_match = re.search(r'\d{4}-\d{2}-\d{2}', episode_url)
-    if date_match:
-        date = date_match.group()
 
     return {
         "Title": title,
