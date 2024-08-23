@@ -37,11 +37,17 @@ def scrape_episode_data(episode_url):
     response = requests.get(episode_url)
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Extract data
-    title = soup.find("meta", property="og:title")["content"].strip()
-    description = soup.find("meta", property="og:description")["content"].strip()
-    image_url = soup.find("meta", property="og:image")["content"].strip()
-    canonical_url = soup.find("link", rel="canonical")["href"]
+    # Extract title
+    title = soup.find("meta", property="og:title")
+    title = title["content"].strip() if title else "Title Not Found"
+
+    # Extract description
+    description = soup.find("meta", property="og:description")
+    description = description["content"].strip() if description else "Description Not Found"
+
+    # Extract image URL
+    image_url = soup.find("meta", property="og:image")
+    image_url = image_url["content"].strip() if image_url else "Image Not Found"
 
     # Extract video URL
     video_url = ""
@@ -49,15 +55,17 @@ def scrape_episode_data(episode_url):
     if video_div:
         video_url = video_div.get("data-kwik_source", "").strip()
 
-    # Extract duration (if available in the description)
+    # Extract date and duration (if available in description)
+    date = ""
     duration = ""
-    duration_match = re.search(r'\b(\d+[:]\d+)\b', description)
+    description_text = description
+
+    duration_match = re.search(r'\b(\d+[:]\d+)\b', description_text)
     if duration_match:
         duration = duration_match.group()
 
-    # Extract date from the canonical URL or other sources (adapt this as needed)
-    date = ""
-    date_match = re.search(r'\d{4}-\d{2}-\d{2}', canonical_url)
+    # Date extraction could be improved based on actual format on the page
+    date_match = re.search(r'\d{4}-\d{2}-\d{2}', episode_url)
     if date_match:
         date = date_match.group()
 
@@ -65,9 +73,9 @@ def scrape_episode_data(episode_url):
         "Title": title,
         "Image": image_url,
         "Video": video_url,
-        "Description": description,
-        "Date": date,
-        "Duration": duration,
+        "Description": description if description else "Description Not Found",
+        "Date": date if date else "Date Not Found",
+        "Duration": duration if duration else "Duration Not Found",
         "isUnlocked": True,
         "fetchVideo": False,
         "beforeEnd": 0,
