@@ -50,8 +50,12 @@ def scrape_episode_data(episode_url):
     # Extract description
     description_div = soup.find("div", id="EpisodeSum")
     if description_div:
-        # Extract only the first <p> tag text
-        description = description_div.find("p").get_text(strip=True)
+        description_parts = []
+        for p in description_div.find_all("p"):
+            # Collect all <p> tags and filter out non-description parts
+            if not p.find("strong"):
+                description_parts.append(p.get_text(strip=True))
+        description = ' '.join(description_parts)
     else:
         description = "Description Not Found"
 
