@@ -6,7 +6,7 @@ import re
 
 def get_episode_urls(base_url, query_string, page):
     # Construct the URL
-    url = f"{base_url}{query_string}" if page == 1 else f"{base_url}page/{page}/{query_string}"
+    url = f"{base_url}?{query_string}" if page == 1 else f"{base_url}page/{page}/?{query_string}"
     
     print(f"Fetching URL: {url}")
     
