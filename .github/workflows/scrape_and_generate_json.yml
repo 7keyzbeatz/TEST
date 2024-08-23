@@ -1,0 +1,43 @@
+name: Scrape Mega TV Episodes
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL to scrape episodes from'
+        required: true
+        type: string
+      from_page:
+        description: 'Starting page number'
+        required: true
+        type: string
+      to_page:
+        description: 'Ending page number'
+        required: true
+        type: string
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests beautifulsoup4
+
+      - name: Run Scraper
+        run: |
+          python scrape.py --base-url "${{ github.event.inputs.base_url }}" --from-page "${{ github.event.inputs.from_page }}" --to-page "${{ github.event.inputs.to_page }}"
+
+      - name: Upload JSON Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: episodes-json
+          path: series.json
