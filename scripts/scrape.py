@@ -5,16 +5,29 @@ import json
 import re
 
 def get_episode_urls(domain, base_url, query_string, page):
-    # Build the URL with the query string and pagination
+    # Construct the URL correctly with the pagination
     url = f"{domain}{base_url}{query_string}" if page == 1 else f"{domain}{base_url}page/{page}/{query_string}"
+    
+    # Debug: Print the constructed URL
+    print(f"Fetching URL: {url}")
+    
     response = requests.get(url)
+    
+    # Debug: Print the HTTP response code
+    print(f"Response status code: {response.status_code}")
+    
     soup = BeautifulSoup(response.content, 'html.parser')
     
     episode_urls = []
-    for link in soup.select('.prel.relative-post.blocked a'):
+    
+    # Updated selector based on the provided HTML structure
+    for link in soup.select('.columns.is-multiline .prel.relative-post.blocked a'):
         href = link.get('href')
         if href and href.startswith('/tvshows/'):
-            episode_urls.append(domain + href)
+            episode_urls.append(href)  # Already a full URL
+    
+    # Debug: Print the found episode URLs
+    print(f"Found episode URLs: {episode_urls}")
     
     return episode_urls
 
@@ -62,7 +75,7 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
     # Manually defined season
     season = {
         "Title": "1ος Κύκλος",
-        "Image": "https://example.com/season1-image.jpg",  # Update this with a valid image URL
+        "Image": "https://example.com/season1-image.jpg",
         "Year": "2022",
         "isUnlocked": True,
         "Episodes": []
@@ -90,9 +103,9 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrape Mega TV episodes.')
-    parser.add_argument('--domain', type=str, required=True, help='Domain of the website')
-    parser.add_argument('--base-url', type=str, required=True, help='Base URL to scrape episodes from')
-    parser.add_argument('--query-string', type=str, required=True, help='Query string part of the URL')
+    parser.add_argument('--domain', type=str, required=True, help='Domain URL (e.g., https://www.megatv.com)')
+    parser.add_argument('--base-url', type=str, required=True, help='Base URL to scrape episodes from (e.g., /episodes/)')
+    parser.add_argument('--query-string', type=str, required=True, help='Query string to append (e.g., ?id=S102&type=tvshows)')
     parser.add_argument('--from-page', type=str, required=True, help='Starting page number')
     parser.add_argument('--to-page', type=str, required=True, help='Ending page number')
     
