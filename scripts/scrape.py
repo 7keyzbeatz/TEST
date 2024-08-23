@@ -1,10 +1,12 @@
 import argparse
 import requests
 from bs4 import BeautifulSoup
+import json
+import re
 
-def get_episode_urls(domain, base_url, query_string, page):
+def get_episode_urls(base_url, query_string, page):
     # Construct the URL
-    url = f"{domain}{base_url}{query_string}" if page == 1 else f"{domain}{base_url}page/{page}/{query_string}"
+    url = f"{base_url}{query_string}" if page == 1 else f"{base_url}page/{page}/{query_string}"
     
     print(f"Fetching URL: {url}")
     
@@ -60,7 +62,7 @@ def scrape_episode_data(episode_url):
         "Fetch": ""
     }
 
-def generate_json(domain, base_url, query_string, from_page, to_page):
+def generate_json(base_url, query_string, from_page, to_page):
     # Manually defined season
     season = {
         "Title": "1ος Κύκλος",
@@ -71,7 +73,7 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
     }
 
     for page in range(int(from_page), int(to_page) + 1):
-        episode_urls = get_episode_urls(domain, base_url, query_string, page)
+        episode_urls = get_episode_urls(base_url, query_string, page)
         print(f"Found episode URLs on page {page}: {episode_urls}")
         for url in episode_urls:
             episode_data = scrape_episode_data(url)
@@ -100,4 +102,4 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    generate_json(args.domain, args.base_url, args.query_string, args.from_page, args.to_page)
+    generate_json(args.base_url, args.query_string, args.from_page, args.to_page)
