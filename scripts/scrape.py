@@ -5,30 +5,35 @@ import json
 import re
 import logging
 
-# Set up logging configuration
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_episode_urls(domain, base_url, query_string, page):
-    """Fetches episode URLs from the given page using regex and logs detailed info."""
-    # Construct the URL
+    """Fetch episode URLs from the specified page."""
     if page == 1:
         url = f"{domain}{base_url}?{query_string}"
     else:
         url = f"{domain}{base_url}page/{page}/?{query_string}"
     
-    logging.info(f"Fetching URL: {url}")
+    print(f"Fetching URL: {url}")
     
     # Make the HTTP request
     response = requests.get(url)
-    logging.info(f"Response status code: {response.status_code}")
+    print(f"Response status code: {response.status_code}")
     
     # Print the first 5000 characters of the HTML for debugging
-    logging.debug(response.text[:5000])
+    print(response.text[:5000])
     
-    # Find episode URLs using regex
-    episode_urls = re.findall(r'https://www\.megatv\.com/tvshows/\d+/epeisodio-\d+', response.text)
-    if not episode_urls:
-        logging.warning(f"No episode URLs found on page {page}.")
+    # Parse the HTML
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    episode_urls = []
+    
+    # Use a CSS selector to find episode links
+    for link in soup.select('.prel.relative-post.blocked a'):
+        href = link.get('href')
+        if href and href.startswith('/tvshows/'):
+            episode_urls.append('https://www.megatv.com' + href)
     
     return episode_urls
 
@@ -42,21 +47,30 @@ def scrape_episode_data(episode_url):
         title_meta = soup.find("meta", property="og:title")
         title = title_meta["content"].strip() if title_meta else "Unknown Title"
 
-        # Extract the description
-        description_div = soup.find("div", id="content")
-        description = description_div.get_text(strip=True) if description_div else "No Description Available"
-
-        # Extract the M3U8 URL
-        video_div = soup.find("div", id="container_embed")
-        video_url = ""
-        if video_div:
-            video_url = video_div.find("div", class_="video-wrap").find("div", class_="video").get("data-kwik_source", "").strip()
-
         # Extract the date
         date_span = soup.find("span", id="currentdate")
         date = date_span.get_text(strip=True) if date_span else "No Date Available"
 
-        logging.info(f"Successfully scraped episode data from {episode_url}. Title: {title}, Date: {date}, Video URL: {video_url}")
+        # Extract the M3U8 URL using regex
+        video_div = soup.find("div", id="container_embed")
+        video_url = ""
+        if video_div:
+            # Get the HTML content of the div to apply regex
+            video_html = str(video_div)
+            # Regex to find the M3U8 URL
+            match = re.search(r'data-kwik_source="([^"]+)"', video_html)
+            if match:
+                video_url = match.group(1).strip()
+
+        # Extract the description from the div with id "EpisodeSum"
+        description_div = soup.find("div", id="EpisodeSum")
+        description = ""
+        if description_div:
+            # Get all <p> tags and concatenate their text
+            paragraphs = description_div.find_all("p")
+            description = ' '.join(p.get_text(strip=True) for p in paragraphs)
+        
+        logging.info(f"Successfully scraped episode data from {episode_url}. Title: {title}, Date: {date}, Video URL: {video_url}, Description: {description}")
 
         return {
             "Title": title,
@@ -77,7 +91,7 @@ def scrape_episode_data(episode_url):
             "Image": "",
             "Video": "",
             "Description": "Failed to scrape",
-            "Date": "",
+            "Date": "Unknown",
             "Duration": "",
             "isUnlocked": False,
             "fetchVideo": False,
@@ -86,7 +100,7 @@ def scrape_episode_data(episode_url):
         }
 
 def generate_json(domain, base_url, query_string, from_page, to_page):
-    """Generates a JSON file containing episode data and logs detailed info."""
+    """Generates JSON file with episode data."""
     # Manually defined season
     season = {
         "Title": "1ος Κύκλος",
@@ -98,7 +112,7 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
 
     for page in range(int(from_page), int(to_page) + 1):
         episode_urls = get_episode_urls(domain, base_url, query_string, page)
-        logging.info(f"Found episode URLs on page {page}: {episode_urls}")
+        print(f"Found episode URLs on page {page}: {episode_urls}")
         for url in episode_urls:
             episode_data = scrape_episode_data(url)
             season["Episodes"].append(episode_data)
@@ -116,8 +130,6 @@ def generate_json(domain, base_url, query_string, from_page, to_page):
 
     with open('series.json', 'w', encoding='utf-8') as f:
         json.dump(series_data, f, ensure_ascii=False, indent=4)
-    
-    logging.info("JSON file 'series.json' has been created successfully.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrape Mega TV episodes.')
