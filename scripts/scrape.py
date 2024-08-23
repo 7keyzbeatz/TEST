@@ -37,31 +37,34 @@ def scrape_episode_data(episode_url):
     try:
         response = requests.get(episode_url)
         soup = BeautifulSoup(response.content, 'html.parser')
-        
-        title = soup.find("meta", property="og:title")["content"].strip()
-        description = soup.find("meta", property="og:description")["content"].strip()
-        image_url = soup.find("meta", property="og:image")["content"].strip()
-        canonical_url = soup.find("link", rel="canonical")["href"]
-        
+
+        # Extract the title
+        title_meta = soup.find("meta", property="og:title")
+        title = title_meta["content"].strip() if title_meta else "Unknown Title"
+
+        # Extract the description
+        description_div = soup.find("div", id="content")
+        description = description_div.get_text(strip=True) if description_div else "No Description Available"
+
+        # Extract the M3U8 URL
+        video_div = soup.find("div", id="container_embed")
         video_url = ""
-        video_div = soup.find("div", {"id": "container_embed"})
         if video_div:
-            video_url = video_div.get("data-kwik_source", "").strip()
-        
-        duration = ""
-        duration_match = re.search(r'\b(\d+[:]\d+)\b', description)
-        if duration_match:
-            duration = duration_match.group()
-        
-        logging.info(f"Successfully scraped episode data from {episode_url}.")
-        
+            video_url = video_div.find("div", class_="video-wrap").find("div", class_="video").get("data-kwik_source", "").strip()
+
+        # Extract the date
+        date_span = soup.find("span", id="currentdate")
+        date = date_span.get_text(strip=True) if date_span else "No Date Available"
+
+        logging.info(f"Successfully scraped episode data from {episode_url}. Title: {title}, Date: {date}, Video URL: {video_url}")
+
         return {
             "Title": title,
-            "Image": image_url,
+            "Image": "",  # Placeholder as image extraction was not requested
             "Video": video_url,
             "Description": description,
-            "Date": "",
-            "Duration": duration,
+            "Date": date,
+            "Duration": "",  # Placeholder if duration extraction is not applicable
             "isUnlocked": True,
             "fetchVideo": False,
             "beforeEnd": 0,
