@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 import json
 import re
 
-def get_episode_urls(base_url, page):
-    url = base_url if page == 1 else f"{base_url}/page/{page}/"
+def get_episode_urls(domain, base_url, query_string, page):
+    url = f"{domain}{base_url}" if page == 1 else f"{domain}{base_url}page/{page}/{query_string}"
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -13,7 +13,7 @@ def get_episode_urls(base_url, page):
     for link in soup.select('.prel.relative-post.blocked a'):
         href = link.get('href')
         if href and href.startswith('/tvshows/'):
-            episode_urls.append('https://www.megatv.com' + href)
+            episode_urls.append(f"{domain}{href}")
     
     return episode_urls
 
@@ -29,7 +29,7 @@ def scrape_episode_data(episode_url):
     video_url = ""
     video_div = soup.find("div", {"id": "container_embed"})
     if video_div:
-        video_url = video_div.get("data-kwik_source", "").strip()
+        video_url = video_div.find("div", {"id": "player_div_id"}).get("data-kwik_source", "").strip()
 
     duration = ""
     duration_match = re.search(r'\b(\d+[:]\d+)\b', description)
@@ -49,18 +49,18 @@ def scrape_episode_data(episode_url):
         "Fetch": ""
     }
 
-def generate_json(base_url, from_page, to_page):
+def generate_json(domain, base_url, query_string, from_page, to_page):
     # Manually defined season
     season = {
         "Title": "1ος Κύκλος",
-        "Image": "https://example.com/season1-image.jpg",
+        "Image": "https://example.com/season1-image.jpg",  # Replace with the correct season image
         "Year": "2022",
         "isUnlocked": True,
         "Episodes": []
     }
 
     for page in range(int(from_page), int(to_page) + 1):
-        episode_urls = get_episode_urls(base_url, page)
+        episode_urls = get_episode_urls(domain, base_url, query_string, page)
         for url in episode_urls:
             episode_data = scrape_episode_data(url)
             season["Episodes"].append(episode_data)
@@ -81,10 +81,12 @@ def generate_json(base_url, from_page, to_page):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrape Mega TV episodes.')
-    parser.add_argument('--base-url', type=str, required=True, help='Base URL to scrape episodes from')
+    parser.add_argument('--domain', type=str, required=True, help='Domain of the website (e.g., https://www.megatv.com)')
+    parser.add_argument('--base-url', type=str, required=True, help='Base URL to scrape episodes from, without query string')
+    parser.add_argument('--query-string', type=str, required=True, help='Query string part of the URL')
     parser.add_argument('--from-page', type=str, required=True, help='Starting page number')
     parser.add_argument('--to-page', type=str, required=True, help='Ending page number')
     
     args = parser.parse_args()
     
-    generate_json(args.base_url, args.from_page, args.to_page)
+    generate_json(args.domain, args.base_url, args.query_string, args.from_page, args.to_page)
