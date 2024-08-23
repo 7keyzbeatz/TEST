@@ -29,7 +29,7 @@ def get_episode_urls(domain, base_url, query_string, page):
     # Define the regex pattern for episode URLs
     pattern = r'https:\/\/www\.megatv\.com\/tvshows\/\d+\/epeisodio-\d+-\d+\/'
 
-    pattern = r'https:\/\/www\.megatv\.com\/tvshows\/\d+\/[a-zA-Z0-9-]+\/'
+    #pattern = r'https:\/\/www\.megatv\.com\/tvshows\/\d+\/[a-zA-Z0-9-]+\/'
     
     # Find all matches in the HTML content
     episode_urls = re.findall(pattern, response.text)
