@@ -18,7 +18,7 @@ def get_episode_urls(domain, base_url, query_string, page):
     print(f"Response status code: {response.status_code}")
     
     # Print the first 500 characters of the HTML for debugging
-    print(response.text[:500])
+    print(response.text[:5000])
     
     # Parse the HTML
     soup = BeautifulSoup(response.content, 'html.parser')
