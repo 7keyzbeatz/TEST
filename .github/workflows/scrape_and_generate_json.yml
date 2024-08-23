@@ -48,7 +48,7 @@ jobs:
 
       - name: Run scraper
         run: |
-          python scrape.py --domain "${{ github.event.inputs.domain }}" \
+          python scripts/scrape.py --domain "${{ github.event.inputs.domain }}" \
                            --base-url "${{ github.event.inputs.base_url }}" \
                            --query-string "${{ github.event.inputs.query_string }}" \
                            --from-page "${{ github.event.inputs.from_page }}" \
