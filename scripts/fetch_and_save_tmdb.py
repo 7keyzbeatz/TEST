@@ -31,13 +31,22 @@ logging.info(f"Loading JSON data from {json_file_path}")
 with open(json_file_path, 'r') as file:
     movies_data = json.load(file)
 
+# Check if movies_data is loaded properly
+if not movies_data or 'Movies' not in movies_data:
+    logging.error("The JSON file doesn't contain the 'Movies' key or is empty.")
+else:
+    logging.info("JSON data loaded successfully.")
+
 # Enrich the movies data with additional TMDB info
 for movie in movies_data.get('Movies', []):
     if 'TMDB_ID' in movie:
         logging.info(f"Fetching details for movie: {movie.get('Title')} (TMDB_ID: {movie['TMDB_ID']})")
         details = get_movie_details(movie['TMDB_ID'])
-        movie.update(details)
-        logging.info(f"Updated movie: {movie.get('Title')} with runtime: {details.get('runtime')}, genres: {details.get('genres')}, year: {details.get('year')}")
+        if details:
+            movie.update(details)
+            logging.info(f"Updated movie: {movie.get('Title')} with runtime: {details.get('runtime')}, genres: {details.get('genres')}, year: {details.get('year')}")
+        else:
+            logging.error(f"Failed to update movie: {movie.get('Title')}")
     else:
         logging.warning(f"Movie '{movie.get('Title')}' does not have a TMDB_ID.")
 
