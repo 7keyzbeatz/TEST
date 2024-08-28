@@ -10,9 +10,11 @@ def get_movie_details(tmdb_id):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
+        # Convert genres to a single string
+        genres = ", ".join([genre['name'] for genre in data.get('genres', [])])
         return {
             'runtime': data.get('runtime'),
-            'genres': [genre['name'] for genre in data.get('genres', [])],
+            'genres': genres,
             'year': data.get('release_date', '').split('-')[0] if 'release_date' in data else None
         }
     else:
@@ -32,4 +34,4 @@ for movie in movies_data.get('Movies', []):
 with open('enriched_movies.json', 'w') as outfile:
     json.dump(movies_data, outfile, indent=4)
 
-print("JSON file enriched and saved as 'tmdb.json'.")
+print("JSON file enriched and saved as 'enriched_movies.json'.")
