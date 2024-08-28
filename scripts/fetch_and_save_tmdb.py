@@ -14,7 +14,6 @@ def get_movie_details(tmdb_id):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        # Convert genres to a single string
         genres = ", ".join([genre['name'] for genre in data.get('genres', [])])
         return {
             'runtime': data.get('runtime'),
@@ -50,14 +49,14 @@ for movie in movies_data.get('Movies', []):
     else:
         logging.warning(f"Movie '{movie.get('Title')}' does not have a TMDB_ID.")
 
-# Verify the enriched data before saving
-logging.info("Verifying enriched JSON data:")
-print(json.dumps(movies_data, indent=4))
-
-# Save the enriched data back to a new JSON file
-output_file_path = 'enriched_movies.json'
+# Save the enriched data back to the same JSON file
+output_file_path = json_file_path  # Save back to the same file
 logging.info(f"Saving enriched JSON data to {output_file_path}")
 with open(output_file_path, 'w') as outfile:
     json.dump(movies_data, outfile, indent=4)
+
+# Log the first 1000 characters of the saved file
+with open(output_file_path, 'r') as file:
+    logging.info("First 1000 characters of the enriched JSON file:\n" + file.read(1000))
 
 logging.info("JSON file enriched and saved successfully.")
