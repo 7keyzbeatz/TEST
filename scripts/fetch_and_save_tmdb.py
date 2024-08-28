@@ -50,6 +50,10 @@ for movie in movies_data.get('Movies', []):
     else:
         logging.warning(f"Movie '{movie.get('Title')}' does not have a TMDB_ID.")
 
+# Verify the enriched data before saving
+logging.info("Verifying enriched JSON data:")
+print(json.dumps(movies_data, indent=4))
+
 # Save the enriched data back to a new JSON file
 output_file_path = 'enriched_movies.json'
 logging.info(f"Saving enriched JSON data to {output_file_path}")
