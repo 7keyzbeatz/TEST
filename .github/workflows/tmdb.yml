@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tmdb-json
-          path: tmdb_movies.json
+          path: data/movies_tmdb.json
