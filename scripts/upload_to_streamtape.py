@@ -16,7 +16,7 @@ CONFIG = {
         }
     },
     'json_file': {
-        'path': 'data/movies.json'
+        'path': 'data/movies_for_streamtape.json'
     }
 }
 
