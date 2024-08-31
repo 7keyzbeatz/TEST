@@ -1,0 +1,54 @@
+name: Convert MP4 to MPEG-DASH and Upload to NFT.Storage
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_url:
+        description: 'Direct MP4 URL'
+        required: true
+        default: 'https://github.com/movieflixgr/Main/raw/main/2024-02-12%2001-47-45.mp4'
+
+jobs:
+  convert_and_upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg wget nodejs npm
+
+    - name: Download MP4 video
+      run: wget ${{ github.event.inputs.video_url }} -O input.mp4
+
+    - name: Convert MP4 to MPEG-DASH
+      run: |
+        ffmpeg -i input.mp4 -codec: copy -f dash output.mpd
+
+    - name: Install NFT.Storage Client
+      run: npm install nft.storage
+
+    - name: Upload DASH files to NFT.Storage
+      env:
+        NFT_STORAGE_API_KEY: ${{ secrets.NFT_STORAGE_API_KEY }}
+      run: |
+        node -e "
+        const fs = require('fs');
+        const { NFTStorage, File } = require('nft.storage');
+        const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY });
+
+        async function storeFiles() {
+          const files = fs.readdirSync('.').filter(file => file.endsWith('.mpd') || file.endsWith('.m4s'));
+          const metadata = await client.storeDirectory(files.map(file => new File([fs.readFileSync(file)], file)));
+          console.log('Files stored successfully: ', metadata);
+          console.log('DASH Playlist URL: https://ipfs.io/ipfs/' + metadata + '/output.mpd');
+        }
+
+        storeFiles();
+        "
+
+    - name: Display IPFS URL
+      run: echo "Check the log above for the DASH Playlist IPFS URL"
