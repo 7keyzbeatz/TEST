@@ -1,0 +1,33 @@
+name: Upload Movies to Streamtape
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow on pushes to the main branch
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Specify the Python version you want to use
+
+      - name: Install Dependencies
+        run: |
+          pip install requests pyyaml
+
+      - name: Run Upload Script
+        run: |
+          python scripts/upload_to_streamtape.py
+
+      - name: Upload JSON Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: updated-movies-json
+          path: data/movies_for_streamtape.json
