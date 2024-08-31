@@ -1,0 +1,52 @@
+{
+  "Main": [
+    {
+      "Live": true,
+      "Video": "",
+      "Fetch": "MediaFire"
+    }
+  ],
+  "Movies": [
+    {
+      "Fetch": "Voe",
+      "TMDB_ID": 653346,
+      "Title": "Kingdom of the Planet of the Apes",
+      "ImageMain": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gKkl37BQuKTanygYQG1pyYgLVgf.jpg",
+      "Video": "lhaczjsdhm5h",
+      "DirectVideo": "http://gmtcloud.site/video/movies/tt0263488.mp4?id=0",
+      "isUnlocked": true,
+      "VOE_ID-": "lhaczjsdhm5h",
+      "Runtime": 145,
+      "Genres": "Science Fiction, Adventure, Action",
+      "Year": "2024",
+      "SubtitlesUrl": "https://github.com/7keyzbeatz/GreekSubtitles/raw/main/subs/653346.srt",
+      "enabledSubtitles": true
+    },
+    {
+      "Fetch": "GamatoTV",
+      "TMDB_ID": 8922,
+      "Title": "Jeepers Creepers",
+      "ImageMain": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/g410Y1U1ELbmJG14Zru3UAimm1G.jpg",
+      "Video": "12480",
+      "DirectVideo": "http://gmtcloud.site/video/movies/tt0263488.mp4?id=0",
+      "isUnlocked": true,
+      "VOE_ID-": "bvklcfjazliv",
+      "Runtime": 90,
+      "Genres": "Horror, Thriller, Mystery, Drama",
+      "Year": "2001"
+    },
+    {
+      "Fetch": "GamatoTV",
+      "TMDB_ID": 280,
+      "Title": "Terminator 2: Judgment Day",
+      "ImageMain": "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/5M0j0B18abtBI5gi2RhfjjurTqb.jpg",
+      "Video": "19736",
+      "DirectVideo": "http://gmtcloud.site/video/movies/tt0103064.mp4?id=0",
+      "isUnlocked": true,
+      "VOE_ID-": "tbjdblk7cghj",
+      "Runtime": 137,
+      "Genres": "Action, Thriller, Science Fiction",
+      "Year": "1991"
+    }
+  ]
+}
