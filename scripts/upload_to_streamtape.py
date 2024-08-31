@@ -33,7 +33,7 @@ def save_json(file_path, data):
 # Upload video to Streamtape
 def upload_to_streamtape(video_url, title, streamtape_login, streamtape_key, upload_endpoint, folder, name_suffix):
     # Construct the request URL
-    request_url = f"{upload_endpoint}?login={streamtape_login}&key={streamtape_key}&folder={folder}&name={title}{name_suffix}&url={video_url}"
+    request_url = f"{upload_endpoint}?login={streamtape_login}&key={streamtape_key}&url={video_url}"
     
     # Send GET request to the upload endpoint
     response = requests.get(request_url)
