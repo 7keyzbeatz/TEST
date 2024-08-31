@@ -41,10 +41,20 @@ jobs:
         const client = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY });
 
         async function storeFiles() {
-          const files = fs.readdirSync('.').filter(file => file.endsWith('.mpd') || file.endsWith('.m4s'));
-          const metadata = await client.storeDirectory(files.map(file => new File([fs.readFileSync(file)], file)));
-          console.log('Files stored successfully: ', metadata);
-          console.log('DASH Playlist URL: https://ipfs.io/ipfs/' + metadata + '/output.mpd');
+          try {
+            const files = fs.readdirSync('.').filter(file => file.endsWith('.mpd') || file.endsWith('.m4s'));
+            if (files.length === 0) {
+              console.error('No DASH files found for upload.');
+              process.exit(1);
+            }
+            const fileObjects = files.map(file => new File([fs.readFileSync(file)], file));
+            const metadata = await client.storeDirectory(fileObjects);
+            console.log('Files stored successfully:', metadata);
+            console.log('DASH Playlist URL: https://ipfs.io/ipfs/' + metadata.ipnft + '/output.mpd');
+          } catch (err) {
+            console.error('Error storing files:', err);
+            process.exit(1);
+          }
         }
 
         storeFiles();
