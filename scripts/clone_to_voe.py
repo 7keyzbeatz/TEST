@@ -6,7 +6,7 @@ API_KEY = "oulcmpPHppZNamWvRNx8ZsVQixsyaAZXW3qbYmnE0xYVdFhznTIw79nqUm4gXxrH"
 
 # Function to clone a file to another Voe account
 def clone_file(file_code):
-    url = f"https://voe.sx/api/file/clone?key={API_KEY}&file_code={file_code}&fld_id=0"
+    url = f"https://voe.sx/api/file/clone?key={API_KEY}&file_code={file_code}&fld_id=65461"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
