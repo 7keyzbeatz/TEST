@@ -24,17 +24,29 @@ def process_json_file(input_file, output_file):
         data = json.load(f)
     
     movies = data.get("Movies", [])
-    for movie in movies:
+    total_movies = len(movies)
+    print(f"Total movies to process: {total_movies}")
+
+    for i, movie in enumerate(movies):
         voe_id = movie.get("Voe_ID")
         if voe_id:
+            print(f"Processing movie {i + 1}/{total_movies} with Voe_ID: {voe_id}")
             voe_id_backup = clone_file(voe_id)
             if voe_id_backup:
                 movie["Voe_ID_Backup"] = voe_id_backup
+                print(f"Successfully cloned movie {i + 1}/{total_movies}. New Voe_ID_Backup: {voe_id_backup}")
+            else:
+                print(f"Failed to clone movie {i + 1}/{total_movies}.")
+        else:
+            print(f"Movie {i + 1}/{total_movies} does not have a Voe_ID, skipping.")
+
+        remaining_movies = total_movies - (i + 1)
+        print(f"Remaining movies: {remaining_movies}")
     
     with open(output_file, 'w') as f:
         json.dump(data, f, indent=4)
     
-    print(f"Processed {len(movies)} movies and saved to {output_file}")
+    print(f"Processed {total_movies} movies and saved to {output_file}")
 
 if __name__ == "__main__":
     input_file = "data/movies_clone.json"  # The input JSON file
