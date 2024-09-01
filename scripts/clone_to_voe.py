@@ -37,6 +37,6 @@ def process_json_file(input_file, output_file):
     print(f"Processed {len(movies)} movies and saved to {output_file}")
 
 if __name__ == "__main__":
-    input_file = "movies_clone.json"  # The input JSON file
+    input_file = "data/movies_clone.json"  # The input JSON file
     output_file = "movies_with_backup.json"  # The output JSON file
     process_json_file(input_file, output_file)
