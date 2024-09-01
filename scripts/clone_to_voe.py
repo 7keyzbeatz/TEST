@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 # Replace with your actual API key
 API_KEY = "oulcmpPHppZNamWvRNx8ZsVQixsyaAZXW3qbYmnE0xYVdFhznTIw79nqUm4gXxrH"
@@ -19,7 +20,7 @@ def clone_file(file_code):
         print(f"Error: {response.status_code} - {response.text}")
         return None
 
-def process_json_file(input_file, output_file):
+def process_json_file(input_file, output_file, batch_size=20, wait_time=15):
     with open(input_file, 'r') as f:
         data = json.load(f)
     
@@ -42,6 +43,11 @@ def process_json_file(input_file, output_file):
 
         remaining_movies = total_movies - (i + 1)
         print(f"Remaining movies: {remaining_movies}")
+        
+        # Pause after every `batch_size` movies
+        if (i + 1) % batch_size == 0:
+            print(f"Processed {i + 1} movies. Waiting for {wait_time} seconds to avoid rate limiting...")
+            time.sleep(wait_time)
     
     with open(output_file, 'w') as f:
         json.dump(data, f, indent=4)
