@@ -23,7 +23,7 @@ jobs:
       run: pip install --upgrade pip
 
     - name: Run Genre Processing Script
-      run: python process_genres.py
+      run: python scripts/process_genres.py
 
     - name: Upload Genre JSON Artifact
       uses: actions/upload-artifact@v3
