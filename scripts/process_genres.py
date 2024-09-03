@@ -3,7 +3,7 @@ import os
 
 # Define the input and output file paths
 input_file = 'data/movies_for_genres.json'
-output_file = 'output/processed_movies.json'
+output_file = 'output/genres.json'
 
 # Read JSON data from the input file
 with open(input_file, 'r') as f:
