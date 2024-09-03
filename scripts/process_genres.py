@@ -1,30 +1,27 @@
 import json
 import os
 
-# Read JSON data from movies.json
-with open('data/movies_for_genres.json', 'r') as f:
+# Define the input and output file paths
+input_file = 'data/movies_for_genres.json'
+output_file = 'output/processed_movies.json'
+
+# Read JSON data from the input file
+with open(input_file, 'r') as f:
     data = json.load(f)
 
-# Initialize a new structure to store the genres
-genre_based_movies = {}
-
-# Iterate over each movie in the "Movies" list
+# Process each movie to transform the Genres field
 for movie in data.get('Movies', []):
     genres = movie.get('Genres', "")
-    if genres:
-        # Split genres by comma and strip whitespace
-        genre_list = [genre.strip() for genre in genres.split(',')]
-        for genre in genre_list:
-            if genre:
-                if genre not in genre_based_movies:
-                    genre_based_movies[genre] = []
-                # Add the movie title under the genre
-                genre_based_movies[genre].append({"Title": movie.get("Title")})
+    # Split the genres and create a list of objects with "Title" keys
+    genre_list = [{"Title": genre.strip()} for genre in genres.split(',') if genre.strip()]
+    # Update the Genres field with the new format
+    movie['Genres'] = genre_list
 
-# Output the result into a new JSON file
-output_file = 'output/genres.json'
+# Create output directory if it doesn't exist
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
-with open(output_file, 'w') as f:
-    json.dump(genre_based_movies, f, indent=4)
 
-print(f"Genres processed and saved to {output_file}")
+# Write the modified data back to a new JSON file
+with open(output_file, 'w') as f:
+    json.dump(data, f, indent=4)
+
+print(f"Processed movies saved to {output_file}")
