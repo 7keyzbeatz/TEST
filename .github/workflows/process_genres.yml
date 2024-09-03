@@ -1,0 +1,32 @@
+name: Process Movie Genres
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  process-genres:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install Dependencies
+      run: pip install --upgrade pip
+
+    - name: Run Genre Processing Script
+      run: python process_genres.py
+
+    - name: Upload Genre JSON Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: genres-json
+        path: output/genres.json
