@@ -36,7 +36,7 @@ def upload_to_streamtape(video_url, title, streamtape_login, streamtape_key, upl
     request_url = f"{upload_endpoint}?login={streamtape_login}&key={streamtape_key}&url={video_url}"
     
     # Send GET request to the upload endpoint
-    response = requests.get(request_url)
+    response = requests.get(request_url, timeout=30)
     
     if response.status_code == 200:
         result = response.json()
