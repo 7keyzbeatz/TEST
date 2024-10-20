@@ -88,7 +88,7 @@ batch_size = 25  # Process 25 movies at a time
 
 # Define the range of movies to process (0-based index)
 start_index = 0  # Start from the 100th movie (index 99)
-end_index = 2000  # Up to the 200th movie (index 199)
+end_index = 1500  # Up to the 200th movie (index 199)
 
 if movies_json:
     # Extract movies and process them in batches
