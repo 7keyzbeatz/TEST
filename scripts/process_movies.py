@@ -24,8 +24,8 @@ def upload_to_voe(api_key, direct_video_url, folder_id):
         # Parse the response JSON
         result = response.json()
 
-        # Check if the upload was successful
-        if result.get('status') == "ok":
+        # Check if the HTTP status code is 200 and API status is 'ok'
+        if response.status_code == 200 and result.get('status') == "ok":
             file_code = result.get('filecode')
             print(f"Successfully uploaded. File code: {file_code}")
             return file_code
@@ -54,8 +54,22 @@ def process_movies_in_batches(movies, start_index, end_index, batch_size, api_ke
         movie = movies[i]
         direct_video_url = movie.get('DirectVideo')
         title = movie.get('Title', 'Unknown Title')
+        
+        # Debug: Print the entire movie data to identify structure
+        print(f"Processing movie {i+1}/{len(movies)}: {title}")
+        print(f"Movie details: {movie}")
 
-        print(f"Processing movie ID: {movie.get('ID', 'Unknown ID')}, Title: {title}")
+        # Try to access the movie ID and print it for debugging
+        movie_id = movie.get('ID')  # Use the correct key for movie ID
+
+        # Debug: Log if the ID is found
+        if movie_id:
+            print(f"Movie ID: {movie_id}")
+        else:
+            print(f"Warning: No ID found for '{title}'.")
+
+        if not movie_id:
+            continue
 
         # Try to upload to voe.sx
         file_code = upload_to_voe(api_key, direct_video_url, folder_id)
@@ -76,8 +90,8 @@ def main():
     config = {
         'api_key': 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI',  # Replace with your voe.sx API key
         'folder_id': '50460',  # Folder ID to upload the videos into
-        'json_file_path': 'data/movies.json',  # Path to the JSON file containing movie data
-        'batch_size': 100  # Number of movies to process per batch
+        'json_file_path': 'data/movies_for_voe.json',  # Path to the JSON file containing movie data
+        'batch_size': 25  # Number of movies to process per batch
     }
 
     # Load the JSON data from file
@@ -85,7 +99,7 @@ def main():
     
     # Define the batch processing range
     start_index = 0
-    end_index = len(data['Movies'])
+    end_index = 30
 
     # Process the movies in batches
     process_movies_in_batches(data['Movies'], start_index, end_index, config['batch_size'], config['api_key'], config['folder_id'])
