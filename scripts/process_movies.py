@@ -90,7 +90,7 @@ def main():
     config = {
         'api_key': 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI',  # Replace with your voe.sx API key
         'folder_id': '50460',  # Folder ID to upload the videos into
-        'json_file_path': 'data/movies_for_voe.json',  # Path to the JSON file containing movie data
+        'json_file_path': 'data/movies.json',  # Path to the JSON file containing movie data
         'batch_size': 25  # Number of movies to process per batch
     }
 
