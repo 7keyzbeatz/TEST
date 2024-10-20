@@ -1,110 +1,97 @@
 import json
-import os
-import time
 import requests
-from requests.exceptions import ConnectionError, Timeout
 
-# Configuration details
-CONFIG = {
-    'voe': {
-        'api_key': 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI'  # Replace with your Voe API key
-    },
-    'upload': {
-        'endpoint': 'https://voe.sx/api/upload/url',
-        'parameters': {
-            'folder': '50460'  # Replace with your folder ID
-        }
-    },
-    'json_file': {
-        'path': 'data/movies.json'  # Replace with your JSON file path
-    }
-}
-
-# Load JSON data
+# Function to load JSON data from a file
 def load_json(file_path):
     with open(file_path, 'r') as file:
         return json.load(file)
 
-# Save updated JSON data
+# Function to save updated JSON data to a file
 def save_json(file_path, data):
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
 
-# Upload video to Voe
-def upload_to_voe(api_key, direct_video_url, folder_id, retries=3, delay=5):
+# Function to upload videos to voe.sx
+def upload_to_voe(api_key, direct_video_url, folder_id):
+    # Construct the API URL for voe.sx
     api_url = f"https://voe.sx/api/upload/url?key={api_key}&url={direct_video_url}&folder_id={folder_id}"
-    
-    for attempt in range(retries):
-        try:
-            # Adding a timeout of 30 seconds
-            response = requests.post(api_url, timeout=30)
-            response.raise_for_status()  # Raise HTTPError for bad responses
-            
-            # Check if the response is successful
-            if response.status_code == 200:
-                result = response.json()
-                if result['status'] == 200:
-                    file_code = result['result']['file_code']
-                    print(f"Successfully uploaded. File code: {file_code}")
-                    return file_code
-                else:
-                    print(f"Error: {result['msg']}")
-                    return None
-            else:
-                print(f"Error: Failed with status code {response.status_code}")
-                return None
 
-        except (ConnectionError, Timeout) as e:
-            print(f"Connection error or timeout occurred: {e}")
-            if attempt < retries - 1:
-                print(f"Retrying... (Attempt {attempt + 1}/{retries})")
-                time.sleep(delay)
-            else:
-                print("Max retries exceeded. Exiting.")
-                return None
+    try:
+        # Send POST request to voe.sx API
+        response = requests.post(api_url)
+        response.raise_for_status()  # Raise an error for any HTTP status codes >= 400
 
-# Process movies in batches
+        # Parse the response JSON
+        result = response.json()
+
+        # Check if the upload was successful
+        if result.get('status') == "ok":
+            file_code = result.get('filecode')
+            print(f"Successfully uploaded. File code: {file_code}")
+            return file_code
+        elif result.get('msg') == "already in queue":
+            print(f"Video URL '{direct_video_url}' is already in the upload queue.")
+            return "already_in_queue"
+        else:
+            print(f"Upload failed. Response: {result}")
+            return None
+    except requests.exceptions.HTTPError as errh:
+        print(f"HTTP Error occurred: {errh}")
+        return None
+    except requests.exceptions.ConnectionError as errc:
+        print(f"Error Connecting: {errc}")
+        return None
+    except requests.exceptions.Timeout as errt:
+        print(f"Timeout Error: {errt}")
+        return None
+    except requests.exceptions.RequestException as err:
+        print(f"Request Exception: {err}")
+        return None
+
+# Function to process movies in batches and upload them to voe.sx
 def process_movies_in_batches(movies, start_index, end_index, batch_size, api_key, folder_id):
-    for i in range(start_index, end_index, batch_size):
-        batch = movies[i:i + batch_size]
-        print(f"Processing batch {i // batch_size + 1} of {len(movies) // batch_size + 1}...")
-        
-        for movie in batch:
-            # Safely get the 'ID' and 'Title' keys with default values
-            movie_id = movie.get('ID', 'Unknown ID')  # Use 'Unknown ID' if the key is missing
-            title = movie.get('Title', 'Untitled')    # Use 'Untitled' if the key is missing
-            direct_video_url = movie['DirectVideo']   # Assuming 'DirectVideo' always exists
-            
-            print(f"Processing movie ID: {movie_id}, Title: {title}")
-            file_code = upload_to_voe(api_key, direct_video_url, folder_id)
-            
-            if file_code:
-                movie['FileCode'] = file_code
-            else:
-                print(f"Failed to upload movie: {title}")
-        
-        # Optional: Sleep for a few seconds between batches to avoid overwhelming the server
-        time.sleep(5)
-        
+    for i in range(start_index, min(end_index, len(movies))):
+        movie = movies[i]
+        direct_video_url = movie.get('DirectVideo')
+        title = movie.get('Title', 'Unknown Title')
+
+        print(f"Processing movie ID: {movie.get('ID', 'Unknown ID')}, Title: {title}")
+
+        # Try to upload to voe.sx
+        file_code = upload_to_voe(api_key, direct_video_url, folder_id)
+
+        # Skip if already in queue
+        if file_code == "already_in_queue":
+            print(f"Skipping '{title}', as it is already in the upload queue.")
+            continue
+
+        if file_code:
+            movie['FileCode'] = file_code
+        else:
+            print(f"Failed to upload '{title}'")
+
+# Main function to load the movie data, process in batches, and save the updated data
 def main():
-    # Extract configuration details
-    api_key = CONFIG['voe']['api_key']
-    folder_id = CONFIG['upload']['parameters']['folder']
-    json_file_path = CONFIG['json_file']['path']
+    # Configuration details
+    config = {
+        'api_key': 'vU09m2ekakGBqEw9ewfxAwxyiUtlClAKEhIbMavmmvI6Ob9vawParVv7cZ0Id6YI',  # Replace with your voe.sx API key
+        'folder_id': '50460',  # Folder ID to upload the videos into
+        'json_file_path': 'data/movies.json',  # Path to the JSON file containing movie data
+        'batch_size': 100  # Number of movies to process per batch
+    }
+
+    # Load the JSON data from file
+    data = load_json(config['json_file_path'])
     
-    # Load movie data
-    data = load_json(json_file_path)
-    
-    # Define the batch processing parameters
+    # Define the batch processing range
     start_index = 0
     end_index = len(data['Movies'])
-    batch_size = 10  # Adjust the batch size as needed
-    
+
     # Process the movies in batches
-    process_movies_in_batches(data['Movies'], start_index, end_index, batch_size, api_key, folder_id)
-    
-    # Save updated movie data with Streamtape file codes
-    save_json(json_file_path, data)
+    process_movies_in_batches(data['Movies'], start_index, end_index, config['batch_size'], config['api_key'], config['folder_id'])
+
+    # Save the updated data back to the JSON file
+    save_json(config['json_file_path'], data)
 
 if __name__ == "__main__":
     main()
