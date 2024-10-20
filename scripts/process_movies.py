@@ -70,9 +70,12 @@ def process_movies_in_batches(movies, start_index, end_index, batch_size, api_ke
         print(f"Processing batch {i // batch_size + 1} of {len(movies) // batch_size + 1}...")
         
         for movie in batch:
-            direct_video_url = movie['DirectVideo']
-            title = movie['Title']
-            print(f"Processing movie ID: {movie['ID']}, Title: {title}")
+            # Safely get the 'ID' and 'Title' keys with default values
+            movie_id = movie.get('ID', 'Unknown ID')  # Use 'Unknown ID' if the key is missing
+            title = movie.get('Title', 'Untitled')    # Use 'Untitled' if the key is missing
+            direct_video_url = movie['DirectVideo']   # Assuming 'DirectVideo' always exists
+            
+            print(f"Processing movie ID: {movie_id}, Title: {title}")
             file_code = upload_to_voe(api_key, direct_video_url, folder_id)
             
             if file_code:
@@ -82,7 +85,7 @@ def process_movies_in_batches(movies, start_index, end_index, batch_size, api_ke
         
         # Optional: Sleep for a few seconds between batches to avoid overwhelming the server
         time.sleep(5)
-
+        
 def main():
     # Extract configuration details
     api_key = CONFIG['voe']['api_key']
