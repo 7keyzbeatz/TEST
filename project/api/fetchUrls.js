@@ -1,12 +1,21 @@
-module.exports = async (req, res) => {
-  // Example list of Twitch URLs (can be dynamically passed as input)
-  const channels = [
-    "https://www.twitch.tv/livethess03",
-    "https://www.twitch.tv/pun1shers_tv"
-  ];
+const fetch = require('node-fetch'); // You need to install node-fetch if it's not already installed
 
-  // Process each channel URL to extract the .m3u8 URL
-  const results = await Promise.all(channels.map(channel => fetchM3u8Url(channel)));
+module.exports = async (req, res) => {
+  // Get the channel IDs from the query parameters (channel IDs only)
+  const { channels } = req.query;
+
+  // If no channel IDs are passed, return an error
+  if (!channels) {
+    return res.status(400).json({
+      error: 'No channel IDs provided'
+    });
+  }
+
+  // Parse the channel IDs (expects a comma-separated list)
+  const channelIds = channels.split(',');
+
+  // Process each channel ID to extract the .m3u8 URL
+  const results = await Promise.all(channelIds.map(channelId => fetchM3u8Url(channelId)));
 
   // Send a response back to the client
   return res.json({
@@ -15,8 +24,13 @@ module.exports = async (req, res) => {
   });
 };
 
-async function fetchM3u8Url(channelUrl) {
+// Function to fetch .m3u8 URL for a given channel ID
+async function fetchM3u8Url(channelId) {
   try {
+    // Generate the full Twitch URL using the channel ID
+    const channelUrl = `https://www.twitch.tv/${channelId}`;
+
+    // Call the external API to fetch the stream info for the channel
     const apiUrl = `https://pwn.sh/tools/streamapi.py?url=${channelUrl}`;
     const response = await fetch(apiUrl);
 
@@ -24,9 +38,12 @@ async function fetchM3u8Url(channelUrl) {
       throw new Error(`Failed to fetch data for ${channelUrl}`);
     }
 
+    // Get the response text
     const responseText = await response.text();
+    // Extract the .m3u8 URL
     const m3u8Url = extractUrl(responseText, ".m3u8");
 
+    // Return the result
     if (m3u8Url) {
       return {
         Type: "Direct",
@@ -45,13 +62,14 @@ async function fetchM3u8Url(channelUrl) {
   } catch (error) {
     return {
       Type: "Error",
-      Result: `Error processing ${channelUrl}: ${error.message}`,
+      Result: `Error processing ${channelId}: ${error.message}`,
       enabledDRM: false,
       requiredHeaders: false
     };
   }
 }
 
+// Helper function to extract the URL based on the keyword (e.g., .m3u8)
 function extractUrl(inputString, keyword) {
   const matches = inputString.match(/"[^"]*\.m3u8[^"]*"/);
   return matches ? matches[0].replace(/"/g, '') : null;
