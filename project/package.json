@@ -1,0 +1,16 @@
+{
+  "name": "fetchUrls",
+  "version": "1.0.0",
+  "description": "Fetch m3u8 URLs for Twitch channels",
+  "main": "api/fetchUrls.js",
+  "scripts": {
+    "dev": "vercel dev", 
+    "start": "vercel dev" 
+  },
+  "dependencies": {
+    "node-fetch": "^3.0.0"
+  },
+  "engines": {
+    "node": "16.x"
+  }
+}
