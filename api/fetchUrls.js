@@ -101,4 +101,5 @@ function getResolutionQuality(url) {
   return 0; // Default case, lowest quality
 }
 
-module.exports = { handler };
+// Export the handler as the default export
+export default handler;
