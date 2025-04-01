@@ -52,53 +52,17 @@ async function fetchM3u8Url(channelUrl) {
   // Extract all the .m3u8 URLs
   const m3u8Urls = extractUrls(body);
 
-  // Filter out audio-only streams and choose the highest quality video stream
+  // Filter out audio-only streams and choose the last video stream
   const videoStreams = m3u8Urls.filter(url => !url.includes('audio'));
   
   if (videoStreams.length === 0) {
     return null; // No valid video streams found
   }
 
-  // Find the best quality stream (highest resolution)
-  // Assuming the URLs contain resolution info like '1080p', '720p', etc.
-  const bestQualityUrl = selectBestQuality(videoStreams);
+  // Return the last stream (last in the filtered list)
+  const lastStreamUrl = videoStreams[videoStreams.length - 1];
   
-  return bestQualityUrl;
-}
-
-function extractUrls(responseText) {
-  // Regular expression to extract all .m3u8 URLs
-  const regex = /https?:\/\/[^ ]+\.m3u8/g;
-  return responseText.match(regex) || [];
-}
-
-function selectBestQuality(urls) {
-  // Example: A basic way to rank by resolution
-  // You can enhance this by checking bitrate or resolution more precisely
-  const qualityMap = {
-    "1080p": 3,
-    "720p": 2,
-    "480p": 1
-  };
-
-  // Rank URLs by resolution quality
-  const rankedUrls = urls.sort((a, b) => {
-    const aQuality = getResolutionQuality(a);
-    const bQuality = getResolutionQuality(b);
-    return bQuality - aQuality;
-  });
-
-  // Return the URL with the highest resolution
-  return rankedUrls[0];
-}
-
-function getResolutionQuality(url) {
-  // Simple function to determine the resolution quality from the URL
-  // Example: '1080p' in URL would return the number 3 for highest quality
-  if (url.includes('1080p')) return 3;
-  if (url.includes('720p')) return 2;
-  if (url.includes('480p')) return 1;
-  return 0; // Default case, lowest quality
+  return lastStreamUrl;
 }
 
 // Export the handler as the default export
