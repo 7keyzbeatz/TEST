@@ -65,5 +65,12 @@ async function fetchM3u8Url(channelUrl) {
   return lastStreamUrl;
 }
 
+// Function to extract all .m3u8 URLs from the response text
+function extractUrls(responseText) {
+  // Regular expression to extract all .m3u8 URLs
+  const regex = /https?:\/\/[^ ]+\.m3u8/g;
+  return responseText.match(regex) || [];
+}
+
 // Export the handler as the default export
 export default handler;
