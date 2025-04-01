@@ -1,5 +1,4 @@
-const fetch = require('node-fetch');
-
+// Use dynamic import for 'node-fetch'
 async function handler(req, res) {
   const { channelId } = req.query;
 
@@ -44,6 +43,8 @@ async function handler(req, res) {
 }
 
 async function fetchM3u8Url(channelUrl) {
+  // Dynamically import node-fetch
+  const { default: fetch } = await import('node-fetch');
   const apiUrl = `https://pwn.sh/tools/streamapi.py?url=${channelUrl}`;
   const response = await fetch(apiUrl);
   const body = await response.text();
