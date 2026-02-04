@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Splitter - Θανάσης</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; padding: 20px; color: #333; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        h2 { text-align: center; color: #2c3e50; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .row { display: flex; gap: 10px; }
+        button { width: 100%; background: #27ae60; color: white; border: none; padding: 12px; border-radius: 6px; margin-top: 20px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #219150; }
+        #result { margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 6px; display: none; line-height: 1.6; }
+        .footer { text-align: center; font-size: 12px; margin-top: 20px; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Υπολογιστής Κοινοχρήστων</h2>
+    
+    <label>Συνολικό Ποσό Λογαριασμού (€)</label>
+    <input type="number" id="bill" placeholder="π.χ. 84.27" step="0.01">
+
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+    <label>Ενοικιαστής (Όροφος)</label>
+    <div class="row">
+        <input type="number" id="tStart" placeholder="Παλιά">
+        <input type="number" id="tEnd" placeholder="Νέα">
+    </div>
+
+    <label>Θανάσης (Ισόγειο)</label>
+    <div class="row">
+        <input type="number" id="oStart" placeholder="Παλιά">
+        <input type="number" id="oEnd" placeholder="Νέα">
+    </div>
+
+    <button onclick="calculate()">Υπολογισμός</button>
+
+    <div id="result"></div>
+</div>
+
+<div class="footer">Created for Thanasis by 7Keyz Beatz 🚀</div>
+
+<script>
+function calculate() {
+    const bill = parseFloat(document.getElementById('bill').value);
+    const tUnits = parseFloat(document.getElementById('tEnd').value) - parseFloat(document.getElementById('tStart').value);
+    const oUnits = parseFloat(document.getElementById('oEnd').value) - parseFloat(document.getElementById('oStart').value);
+
+    if (isNaN(bill) || isNaN(tUnits) || isNaN(oUnits)) {
+        alert("Συμπλήρωσε όλα τα πεδία σωστά!");
+        return;
+    }
+
+    const totalUnits = tUnits + oUnits;
+    if (totalUnits <= 0) {
+        alert("Η κατανάλωση πρέπει να είναι θετική!");
+        return;
+    }
+
+    const tPay = (tUnits / totalUnits) * bill;
+    const oPay = (oUnits / totalUnits) * bill;
+
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <strong>ΑΠΟΤΕΛΕΣΜΑΤΑ:</strong><br>
+        👤 Ενοικιαστής: <b>${tPay.toFixed(2)}€</b> (${tUnits.toFixed(1)} μον.)<br>
+        🏠 Θανάσης: <b>${oPay.toFixed(2)}€</b> (${oUnits.toFixed(1)} μον.)<br>
+        <hr>
+        <small>Σύνολο Μονάδων: ${totalUnits.toFixed(1)}</small>
+    `;
+}
+</script>
+
+</body>
+</html>
