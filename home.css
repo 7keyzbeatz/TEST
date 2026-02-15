@@ -1,0 +1,107 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+:root {
+    --accent: #ff3b3b;
+    --bg: #0b1220;
+    --card: #141c2f;
+    --input: #0f172a;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(circle at top, #16213a 0%, #0b1220 60%);
+    color: white;
+}
+
+.container {
+    max-width: 520px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.card {
+    background: var(--card);
+    padding: 22px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin-top: 6px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: var(--input);
+    color: white;
+    font-size: 16px;
+}
+
+.toggle {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+    .toggle button {
+        flex: 1;
+        padding: 11px;
+        border-radius: 12px;
+        border: none;
+        background: var(--input);
+        color: white;
+        cursor: pointer;
+    }
+
+        .toggle button.active {
+            background: var(--accent);
+            font-weight: 600;
+        }
+
+#calculateBtn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 16px;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+}
+
+.back-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border-radius: 16px;
+    border: none;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #2a3758, #1c263f);
+    color: white;
+    transition: 0.25s;
+}
+
+    .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }

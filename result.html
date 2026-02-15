@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Αποτελέσματα</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="card">
+            <h2>Αποτελέσματα</h2>
+            <p id="infoLine"></p>
+            <p id="consumptionA"></p>
+            <p id="consumptionB"></p>
+            <p id="payA"></p>
+            <p id="payB"></p>
+            <p id="difference"></p>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">⬅ Πίσω στην Αρχική</button>
+
+    </div>
+
+    <script>
+function round2(n){ return Math.round(n*100)/100; }
+
+const params = new URLSearchParams(window.location.search);
+
+const energyType = params.get("energyType");
+const payA = parseFloat(params.get("payA"));
+const payB = parseFloat(params.get("payB"));
+
+document.getElementById("infoLine").textContent = params.get("info");
+document.getElementById("consumptionA").textContent =
+"Κατανάλωση Ενοικιαστή: " + params.get("consumptionA");
+document.getElementById("consumptionB").textContent =
+"Κατανάλωση Ιδιοκτήτη: " + params.get("consumptionB");
+document.getElementById("payA").textContent =
+"Ενοικιαστής πληρώνει: " + payA + " €";
+document.getElementById("payB").textContent =
+"Ιδιοκτήτης πληρώνει: " + payB + " €";
+
+const diff = round2(Math.abs(payA - payB));
+document.getElementById("difference").textContent =
+payA > payB
+? "Ο Ενοικιαστής πληρώνει " + diff + " € περισσότερα"
+: payB > payA
+? "Ο Ιδιοκτήτης πληρώνει " + diff + " € περισσότερα"
+: "Πληρώνετε το ίδιο ποσό";
+
+function goBack() {
+window.history.back();
+}
+    </script>
+
+</body>
+</html>
