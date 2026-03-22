@@ -68,10 +68,21 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
 
     if (billMode === "clear") {
 
-        if (isNaN(totalUnits)) {
-            alert("Συμπλήρωσε συνολική κατανάλωση.");
+        let units = totalUnits;
+        
+        if (isNaN(units)) {
+            units = totalReal; // auto calculate από μετρήσεις
+        }
+        
+        if (units <= 0) {
+            alert("Λάθος κατανάλωση.");
             return;
         }
+        
+        const unitPrice = totalBill / units;
+        payA = round2(consumptionA * unitPrice);
+        payB = round2(consumptionB * unitPrice);
+        info = `Τιμή μονάδας: ${round2(unitPrice)} €`;
 
         const unitPrice = totalBill / totalUnits;
         payA = round2(consumptionA * unitPrice);
